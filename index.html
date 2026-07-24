@@ -238,7 +238,7 @@ border-radius:50%;animation:spin .8s linear infinite;vertical-align:-3px;margin-
     <a class="source-link" id="officialLink" target="_blank" rel="noopener">Offizielle Produktseite öffnen ↗</a>
     <div class="availability-state" id="availabilityState">Produkt öffnen, um die Ergebnisse der letzten Cloud-Prüfung zu sehen.</div>
     <div class="availability-list" id="modalShops"></div>
-    <p class="small">Es werden nur erkannte Lager- und Vorbestelltreffer angezeigt. Preis, Sprache und Liefertermin bitte vor dem Kauf auf der Produktseite bestätigen.</p>
+    <p class="small">Es werden nur erkannte Lager- und Vorbestelltreffer angezeigt. Preis und Lagerstatus stammen möglichst aus den strukturierten Produktdaten der konkreten Produktseite. Fehlt dort ein eindeutiger Preis, wird bewusst kein Betrag übernommen.</p>
    </div>
   </div>
  </div>
@@ -430,7 +430,7 @@ async function showAndScanProduct(p){
       :`Beim letzten Cloud-Scan wurde kein bestätigter Direktlink mit eindeutigem Bestell- oder Vorbestellstatus erkannt. Letzte Prüfung: <b>${esc(checked)}</b>.`;
    document.getElementById("modalShops").innerHTML=offers.map(o=>`<a class="offer" href="${esc(o.url)}" target="_blank" rel="noopener">
      <b>${esc(o.shop)}</b><span class="offer-status">${esc(o.order_type)}</span>
-     <span class="offer-price">${esc(o.price||"Preis prüfen")}</span><span>Öffnen ↗</span></a>`).join("");
+     <span class="offer-price">${esc(o.price_verified && o.price ? o.price : "Preis auf Händlerseite prüfen")}</span><span>Öffnen ↗</span></a>`).join("");
  }catch(err){
    document.getElementById("modalStatus").textContent="Cloud-Daten nicht verfügbar";
    document.getElementById("availabilityState").innerHTML="<b>Die Ergebnisdatei ist noch nicht erreichbar.</b><br>Führe im GitHub-Repository unter <code>Actions → OP Hunter Scan & Deploy → Run workflow</code> den ersten Scan aus und lade die Seite danach neu.";

@@ -63,20 +63,133 @@ def relevant(page_text,query):
         hits+=2
     return hits/max(1,len(ts))>=0.60
 
+
+def canonical_url(raw, fallback):
+    patterns = [
+        r'<link[^>]+rel=["\']canonical["\'][^>]+href=["\']([^"\']+)',
+        r'<meta[^>]+property=["\']og:url["\'][^>]+content=["\']([^"\']+)',
+        r'<meta[^>]+content=["\']([^"\']+)["\'][^>]+property=["\']og:url["\']',
+    ]
+    for pattern in patterns:
+        m = re.search(pattern, raw, re.I)
+        if m:
+            return urllib.parse.urljoin(fallback, html.unescape(m.group(1))).split("#")[0]
+    return fallback.split("#")[0]
+
+def page_title(raw):
+    patterns = [
+        r'<meta[^>]+property=["\']og:title["\'][^>]+content=["\']([^"\']+)',
+        r'<meta[^>]+content=["\']([^"\']+)["\'][^>]+property=["\']og:title["\']',
+        r'<h1[^>]*>(.*?)</h1>',
+        r'<title[^>]*>(.*?)</title>',
+    ]
+    for pattern in patterns:
+        m = re.search(pattern, raw, re.I | re.S)
+        if m:
+            return re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", html.unescape(m.group(1)))).strip()
+    return ""
+
+def normalized_code(value):
+    return re.sub(r"[^a-z0-9]", "", (value or "").lower())
+
+def exact_product_identity(raw, url, query):
+    visible_title = page_title(raw)
+    decoded_url = urllib.parse.unquote(url)
+    codes = re.findall(r"\b(?:OP|EB|ST|PRB|DP|TS|LD)[- ]?\d{1,2}\b", query, re.I)
+    if codes:
+        wanted = {normalized_code(c) for c in codes}
+        title_code = normalized_code(visible_title)
+        url_code = normalized_code(decoded_url)
+        raw_head = normalized_code(raw[:250000])
+        if not any(c in title_code or c in url_code or c in raw_head for c in wanted):
+            return False
+
+    q_tokens = [t for t in tokens(query) if not re.fullmatch(r"(?:op|eb|st|prb|dp|ts|ld)\d+", normalized_code(t))]
+    title_low = visible_title.lower()
+    if q_tokens:
+        meaningful = [t for t in q_tokens if len(t) >= 4]
+        if meaningful:
+            hits = sum(t in title_low for t in meaningful)
+            # Require at least one meaningful name token in the main title.
+            if hits == 0 and not codes:
+                return False
+
+    return True
+
+def iter_jsonld(raw):
+    for block in re.findall(
+        r'<script[^>]+type=["\']application/ld\+json["\'][^>]*>(.*?)</script>',
+        raw, re.I | re.S
+    ):
+        try:
+            data = json.loads(html.unescape(block).strip())
+        except Exception:
+            continue
+        stack = data if isinstance(data, list) else [data]
+        while stack:
+            item = stack.pop()
+            if isinstance(item, dict):
+                yield item
+                graph = item.get("@graph")
+                if isinstance(graph, list):
+                    stack.extend(graph)
+            elif isinstance(item, list):
+                stack.extend(item)
+
+def schema_product_offer(raw, query, page_url):
+    wanted_codes = {
+        normalized_code(c)
+        for c in re.findall(r"\b(?:OP|EB|ST|PRB|DP|TS|LD)[- ]?\d{1,2}\b", query, re.I)
+    }
+
+    for item in iter_jsonld(raw):
+        item_type = item.get("@type", "")
+        types = item_type if isinstance(item_type, list) else [item_type]
+        if not any(str(t).lower() == "product" for t in types):
+            continue
+
+        identity = " ".join(str(item.get(k, "")) for k in ("name", "sku", "mpn", "productID"))
+        identity_compact = normalized_code(identity)
+        if wanted_codes and not any(c in identity_compact or c in normalized_code(page_url) for c in wanted_codes):
+            continue
+
+        offers = item.get("offers")
+        if isinstance(offers, dict):
+            offers = [offers]
+        if not isinstance(offers, list):
+            continue
+
+        for offer in offers:
+            if not isinstance(offer, dict):
+                continue
+            availability = str(offer.get("availability", ""))
+            if availability.endswith("/OutOfStock") or availability.endswith("/Discontinued"):
+                continue
+            if not any(availability.endswith("/" + x) for x in ("InStock", "PreOrder", "LimitedAvailability")):
+                continue
+
+            direct = offer.get("url") or item.get("url") or page_url
+            direct = canonical_url(raw, urllib.parse.urljoin(page_url, str(direct)))
+
+            price = offer.get("price")
+            currency = offer.get("priceCurrency")
+            if price not in (None, ""):
+                price_text = f"{price} {currency}".strip()
+            else:
+                price_text = ""
+
+            order_type = "Vorbestellung" if availability.endswith("/PreOrder") else "Bestellung"
+            return {
+                "order_type": order_type,
+                "price": price_text,
+                "url": direct,
+                "evidence": "schema.org Product/Offer",
+            }
+    return None
+
 def is_direct_product_page(raw, url, query):
-    visible = text(raw)
-    low = visible.lower()
     decoded_url = urllib.parse.unquote(url).lower()
 
-    codes = re.findall(r"\b(?:OP|EB|ST|PRB|DP|TS|LD)[- ]?\d{1,2}\b", query, re.I)
-    code_match = False
-    for code in codes:
-        compact = re.sub(r"[- ]", "", code.lower())
-        if compact in re.sub(r"[- ]", "", low) or compact in re.sub(r"[- ]", "", decoded_url):
-            code_match = True
-            break
-
-    title_match = relevant(visible[:140000], query)
     product_markup = bool(re.search(
         r'property=["\']og:type["\'][^>]+content=["\']product|'
         r'"@type"\s*:\s*"Product"|'
@@ -86,25 +199,28 @@ def is_direct_product_page(raw, url, query):
     ))
     product_url = any(x in decoded_url for x in ["/product/", "/products/", "/produkt/", "/p/"])
 
-    return (code_match or title_match) and (product_markup or product_url)
+    if not (product_markup or product_url):
+        return False
+    return exact_product_identity(raw, url, query)
 
 def status(raw, query, url):
     if not is_direct_product_page(raw, url, query):
         return None
 
+    # Highest-confidence path: exact schema.org Product + Offer.
+    schema = schema_product_offer(raw, query, url)
+    if schema:
+        return schema
+
     visible = text(raw)
     low = visible.lower()
 
-    preorder_schema = bool(re.search(r'schema\.org/PreOrder', raw, re.I))
-    instock_schema = bool(re.search(r'schema\.org/(?:InStock|LimitedAvailability)', raw, re.I))
-    out_schema = bool(re.search(r'schema\.org/OutOfStock', raw, re.I))
-
+    out_schema = bool(re.search(r'schema\.org/(?:OutOfStock|Discontinued)', raw, re.I))
     negative = any(re.search(p, low, re.I) for p in NEGATIVE)
-    preorder_text = bool(re.search(
-        r'\bvorbestell(?:ung|en|bar)?\b|\bpre[- ]?order(?: now)?\b',
-        low, re.I
-    ))
+    if out_schema or negative:
+        return None
 
+    # Fallback only when a clearly active purchase control exists on the exact product page.
     active_cart = bool(re.search(
         r'<(?:button|a)[^>]*(?:add.to.cart|in.den.warenkorb|jetzt.kaufen|buy.now)[^>]*>',
         raw, re.I
@@ -114,18 +230,20 @@ def status(raw, query, url):
         raw, re.I
     ))
 
-    if out_schema or (negative and not preorder_schema and not instock_schema):
+    preorder_text = bool(re.search(
+        r'\bvorbestell(?:ung|en|bar)?\b|\bpre[- ]?order(?: now)?\b',
+        low, re.I
+    ))
+
+    if not active_cart:
         return None
 
-    if preorder_schema or (preorder_text and active_cart):
-        order_type = "Vorbestellung"
-    elif instock_schema or active_cart:
-        order_type = "Bestellung"
-    else:
-        return None
-
-    pm = PRICE.search(visible)
-    return order_type, pm.group(0) if pm else ""
+    return {
+        "order_type": "Vorbestellung" if preorder_text else "Bestellung",
+        "price": "",
+        "url": canonical_url(raw, url),
+        "evidence": "aktiver Kaufbutton",
+    }
 
 def search_urls(shop,query):
     q=urllib.parse.quote_plus(query)
@@ -172,12 +290,20 @@ def inspect(shop,product):
         if len(raw)>5000:break
     return None
 
-def offer(shop,product,url,hit):
+def offer(shop, product, url, hit):
+    direct_url = hit.get("url") or url
     return {
-      "product_code":product.get("code",""),"product_name":product.get("name",""),
-      "query":f'{product.get("code","")} {product.get("name","")}'.strip(),
-      "shop":shop["name"],"country":shop.get("country",""),"url":url,
-      "available":True,"order_type":hit[0],"price":hit[1]
+      "product_code": product.get("code", ""),
+      "product_name": product.get("name", ""),
+      "query": f'{product.get("code","")} {product.get("name","")}'.strip(),
+      "shop": shop["name"],
+      "country": shop.get("country", ""),
+      "url": direct_url,
+      "available": True,
+      "order_type": hit.get("order_type", "Bestellung"),
+      "price": hit.get("price", ""),
+      "price_verified": bool(hit.get("price")),
+      "evidence": hit.get("evidence", ""),
     }
 
 def main():
