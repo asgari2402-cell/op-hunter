@@ -218,7 +218,7 @@ border-radius:50%;animation:spin .8s linear infinite;vertical-align:-3px;margin-
   <div class="notice">
     <b>Wichtig:</b> Diese einzelne HTML-Datei kann Shops wegen Browser-Sicherheitsregeln nicht selbstständig im Hintergrund durchsuchen.
     Für echte tägliche Scans um 06:00 Uhr braucht sie zusätzlich einen laufenden Server, Cronjob oder Automationsdienst.
-    GitHub Actions prüft die Händler nach Zeitplan. Shops mit Captcha, Login oder Bot-Schutz können einzelne Prüfungen blockieren.
+    Der Produktkatalog wird täglich mit der offiziellen One-Piece-Card-Game-Seite abgeglichen. Angezeigt werden nur bestätigte Direktlinks zu Produktdetailseiten mit eindeutigem Bestell- oder Vorbestellstatus.
   </div>
 </main>
 
@@ -427,7 +427,7 @@ async function showAndScanProduct(p){
    document.getElementById("modalStatus").textContent=offers.length?`${offers.length} verfügbare Angebote`:"Kein gespeicherter Treffer";
    document.getElementById("availabilityState").innerHTML=offers.length
       ?`${offers.length} verfügbare bzw. vorbestellbare Angebote. Letzte Prüfung: <b>${esc(checked)}</b>.`
-      :`Beim letzten Cloud-Scan wurde kein sicher verfügbarer Treffer erkannt. Letzte Prüfung: <b>${esc(checked)}</b>.`;
+      :`Beim letzten Cloud-Scan wurde kein bestätigter Direktlink mit eindeutigem Bestell- oder Vorbestellstatus erkannt. Letzte Prüfung: <b>${esc(checked)}</b>.`;
    document.getElementById("modalShops").innerHTML=offers.map(o=>`<a class="offer" href="${esc(o.url)}" target="_blank" rel="noopener">
      <b>${esc(o.shop)}</b><span class="offer-status">${esc(o.order_type)}</span>
      <span class="offer-price">${esc(o.price||"Preis prüfen")}</span><span>Öffnen ↗</span></a>`).join("");

@@ -63,17 +63,69 @@ def relevant(page_text,query):
         hits+=2
     return hits/max(1,len(ts))>=0.60
 
-def status(raw,query):
-    visible=text(raw)
-    low=visible.lower()
-    if not relevant(visible[:160000],query):return None
-    neg=any(re.search(p,low,re.I) for p in NEGATIVE)
-    strong=bool(re.search(r"schema\.org/(?:InStock|PreOrder|LimitedAvailability)|add to cart|in den warenkorb|jetzt kaufen|buy now",raw,re.I))
-    pos=strong or any(re.search(p,low,re.I) for p in POSITIVE)
-    if not pos or (neg and not strong):return None
-    typ="Vorbestellung" if re.search(r"\bvorbestell|\bpre[- ]?order|schema\.org/PreOrder",low,re.I) else "Bestellung"
-    pm=PRICE.search(visible)
-    return typ,pm.group(0) if pm else ""
+def is_direct_product_page(raw, url, query):
+    visible = text(raw)
+    low = visible.lower()
+    decoded_url = urllib.parse.unquote(url).lower()
+
+    codes = re.findall(r"\b(?:OP|EB|ST|PRB|DP|TS|LD)[- ]?\d{1,2}\b", query, re.I)
+    code_match = False
+    for code in codes:
+        compact = re.sub(r"[- ]", "", code.lower())
+        if compact in re.sub(r"[- ]", "", low) or compact in re.sub(r"[- ]", "", decoded_url):
+            code_match = True
+            break
+
+    title_match = relevant(visible[:140000], query)
+    product_markup = bool(re.search(
+        r'property=["\']og:type["\'][^>]+content=["\']product|'
+        r'"@type"\s*:\s*"Product"|'
+        r'itemtype=["\'][^"\']*schema\.org/Product|'
+        r'class=["\'][^"\']*(?:product-detail|product-page|product-info)',
+        raw, re.I
+    ))
+    product_url = any(x in decoded_url for x in ["/product/", "/products/", "/produkt/", "/p/"])
+
+    return (code_match or title_match) and (product_markup or product_url)
+
+def status(raw, query, url):
+    if not is_direct_product_page(raw, url, query):
+        return None
+
+    visible = text(raw)
+    low = visible.lower()
+
+    preorder_schema = bool(re.search(r'schema\.org/PreOrder', raw, re.I))
+    instock_schema = bool(re.search(r'schema\.org/(?:InStock|LimitedAvailability)', raw, re.I))
+    out_schema = bool(re.search(r'schema\.org/OutOfStock', raw, re.I))
+
+    negative = any(re.search(p, low, re.I) for p in NEGATIVE)
+    preorder_text = bool(re.search(
+        r'\bvorbestell(?:ung|en|bar)?\b|\bpre[- ]?order(?: now)?\b',
+        low, re.I
+    ))
+
+    active_cart = bool(re.search(
+        r'<(?:button|a)[^>]*(?:add.to.cart|in.den.warenkorb|jetzt.kaufen|buy.now)[^>]*>',
+        raw, re.I
+    )) and not bool(re.search(
+        r'<(?:button|a)[^>]*(?:disabled|aria-disabled=["\']true["\'])[^>]*'
+        r'(?:add.to.cart|in.den.warenkorb|jetzt.kaufen|buy.now)',
+        raw, re.I
+    ))
+
+    if out_schema or (negative and not preorder_schema and not instock_schema):
+        return None
+
+    if preorder_schema or (preorder_text and active_cart):
+        order_type = "Vorbestellung"
+    elif instock_schema or active_cart:
+        order_type = "Bestellung"
+    else:
+        return None
+
+    pm = PRICE.search(visible)
+    return order_type, pm.group(0) if pm else ""
 
 def search_urls(shop,query):
     q=urllib.parse.quote_plus(query)
@@ -93,20 +145,28 @@ def product_links(raw,base,shop,query):
         if any(x in low for x in ["/cart","/warenkorb","/login","/account","/privacy","/impressum"]):continue
         score=sum(t in low for t in ts)+sum(x in low for x in ["/product","/products","/produkt","/p/"])
         if score and u not in out:out.append(u)
-    return out[:3]
+    codes = [
+        re.sub(r"[- ]", "", c.lower())
+        for c in re.findall(r"\b(?:OP|EB|ST|PRB|DP|TS|LD)[- ]?\d{1,2}\b", query, re.I)
+    ]
+    out.sort(key=lambda u: (
+        not any(c in re.sub(r"[- ]", "", urllib.parse.unquote(u).lower()) for c in codes),
+        not any(x in u.lower() for x in ["/product/", "/products/", "/produkt/", "/p/"]),
+        len(u)
+    ))
+    return out[:8]
 
 def inspect(shop,product):
     query=f'{product.get("code","")} {product.get("name","")}'.strip()
     for su in search_urls(shop,query):
         try: raw=fetch(su)
         except Exception: continue
-        hit=status(raw,query)
-        if hit:
-            return offer(shop,product,su,hit)
+        # Such- und Kategorieseiten dürfen niemals als kaufbares Angebot erscheinen.
+        hit = None
         for u in product_links(raw,su,shop,query):
             try: page=fetch(u)
             except Exception: continue
-            hit=status(page,query)
+            hit=status(page,query,u)
             if hit:return offer(shop,product,u,hit)
         # Stop after the first working shop search endpoint to reduce traffic.
         if len(raw)>5000:break
