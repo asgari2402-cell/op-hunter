@@ -16,6 +16,8 @@ ROOT = Path(__file__).resolve().parent
 SHOPS = json.loads((ROOT / "data" / "shops.json").read_text(encoding="utf-8"))
 PRODUCTS = json.loads((ROOT / "data" / "products.json").read_text(encoding="utf-8"))
 OUTPUT = ROOT / "data" / "results.json"
+EVENTS_FILE = ROOT / "data" / "events.json"
+PRICE_HISTORY_FILE = ROOT / "data" / "price_history.json"
 UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/124 Safari/537.36 OP-Hunter-Cloud/1.0"
 MAX_WORKERS = 18
 TIMEOUT = 10
@@ -306,6 +308,120 @@ def offer(shop, product, url, hit):
       "evidence": hit.get("evidence", ""),
     }
 
+
+def load_json(path, fallback):
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return fallback
+
+def numeric_price(value):
+    if not value:
+        return None
+    match = re.search(r"\d+(?:[.,]\d+)?", str(value))
+    if not match:
+        return None
+    try:
+        return float(match.group(0).replace(",", "."))
+    except ValueError:
+        return None
+
+def offer_key(offer):
+    return f'{offer.get("product_code","")}::{offer.get("shop","")}'
+
+def build_events(previous, current, timestamp):
+    previous_map = {offer_key(o): o for o in previous.get("offers", [])}
+    current_map = {offer_key(o): o for o in current.get("offers", [])}
+    new_events = []
+
+    for key, offer in current_map.items():
+        old = previous_map.get(key)
+        if old is None:
+            new_events.append({
+                "type": "new_offer",
+                "title": "Neues verfügbares Angebot",
+                "product_code": offer.get("product_code", ""),
+                "product_name": offer.get("product_name", ""),
+                "shop": offer.get("shop", ""),
+                "order_type": offer.get("order_type", ""),
+                "price": offer.get("price", ""),
+                "url": offer.get("url", ""),
+                "detected_at": timestamp,
+            })
+            continue
+
+        old_price = numeric_price(old.get("price"))
+        new_price = numeric_price(offer.get("price"))
+        if old_price is not None and new_price is not None and abs(old_price - new_price) >= 0.01:
+            new_events.append({
+                "type": "price_drop" if new_price < old_price else "price_rise",
+                "title": "Preis gesunken" if new_price < old_price else "Preis gestiegen",
+                "product_code": offer.get("product_code", ""),
+                "product_name": offer.get("product_name", ""),
+                "shop": offer.get("shop", ""),
+                "old_price": old.get("price", ""),
+                "price": offer.get("price", ""),
+                "url": offer.get("url", ""),
+                "detected_at": timestamp,
+            })
+
+    for key, old in previous_map.items():
+        if key not in current_map:
+            new_events.append({
+                "type": "removed_offer",
+                "title": "Angebot nicht mehr bestätigt",
+                "product_code": old.get("product_code", ""),
+                "product_name": old.get("product_name", ""),
+                "shop": old.get("shop", ""),
+                "price": old.get("price", ""),
+                "url": old.get("url", ""),
+                "detected_at": timestamp,
+            })
+
+    stored = load_json(EVENTS_FILE, {"events": []}).get("events", [])
+    merged = new_events + stored
+    # Keep the latest 300 events.
+    return {"generated_at": timestamp, "events": merged[:300]}
+
+def update_price_history(current, timestamp):
+    history = load_json(PRICE_HISTORY_FILE, {"products": {}})
+    products = history.setdefault("products", {})
+    date_key = timestamp[:10]
+
+    grouped = {}
+    for offer in current.get("offers", []):
+        if not offer.get("price_verified"):
+            continue
+        value = numeric_price(offer.get("price"))
+        if value is None:
+            continue
+        code = offer.get("product_code", "")
+        if not code:
+            continue
+        grouped.setdefault(code, []).append({
+            "value": value,
+            "label": offer.get("price", ""),
+            "shop": offer.get("shop", ""),
+        })
+
+    for code, entries in grouped.items():
+        best = min(entries, key=lambda x: x["value"])
+        series = products.setdefault(code, [])
+        point = {
+            "date": date_key,
+            "value": best["value"],
+            "label": best["label"],
+            "shop": best["shop"],
+        }
+        if series and series[-1].get("date") == date_key:
+            series[-1] = point
+        else:
+            series.append(point)
+        products[code] = series[-120:]
+
+    history["generated_at"] = timestamp
+    return history
+
 def main():
     # Two UTC cron entries handle German summer/winter time. Scheduled runs outside 06:xx Berlin exit.
     if os.getenv("GITHUB_EVENT_NAME")=="schedule":
@@ -332,13 +448,32 @@ def main():
         unique[(o["product_code"],o["shop"])]=o
     offers=list(unique.values())
     offers.sort(key=lambda x:(x["product_code"],x["order_type"]!="Bestellung",x["shop"].lower()))
+    timestamp = dt.datetime.now(dt.timezone.utc).isoformat()
+    previous = load_json(OUTPUT, {"offers": []})
+    verified_prices = sum(1 for o in offers if o.get("price_verified"))
+    preorders = sum(1 for o in offers if o.get("order_type") == "Vorbestellung")
+    products_with_offers = len({o.get("product_code") for o in offers if o.get("product_code")})
+    shops_with_offers = len({o.get("shop") for o in offers if o.get("shop")})
+
     result={
-      "generated_at":dt.datetime.now(dt.timezone.utc).isoformat(),
-      "checked_shops":len(SHOPS),"products_checked":len(PRODUCTS),
-      "checks_attempted":len(tasks),"duration_seconds":round(time.time()-started,1),
+      "generated_at": timestamp,
+      "checked_shops":len(SHOPS),
+      "products_checked":len(PRODUCTS),
+      "checks_attempted":len(tasks),
+      "duration_seconds":round(time.time()-started,1),
+      "offers_count":len(offers),
+      "preorders_count":preorders,
+      "verified_prices_count":verified_prices,
+      "products_with_offers":products_with_offers,
+      "shops_with_offers":shops_with_offers,
       "offers":offers
     }
+    events = build_events(previous, result, timestamp)
+    price_history = update_price_history(result, timestamp)
+
     OUTPUT.write_text(json.dumps(result,ensure_ascii=False,indent=2),encoding="utf-8")
+    EVENTS_FILE.write_text(json.dumps(events,ensure_ascii=False,indent=2),encoding="utf-8")
+    PRICE_HISTORY_FILE.write_text(json.dumps(price_history,ensure_ascii=False,indent=2),encoding="utf-8")
     print(f"Fertig: {len(offers)} verfügbare Angebote gespeichert.")
 
 if __name__=="__main__":

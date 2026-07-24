@@ -1,0 +1,302 @@
+[
+  {
+    "id": 1,
+    "name": "Cardmarket",
+    "country": "EU",
+    "url": "https://www.cardmarket.com"
+  },
+  {
+    "id": 2,
+    "name": "CardTrader",
+    "country": "Italien",
+    "url": "https://www.cardtrader.com"
+  },
+  {
+    "id": 3,
+    "name": "Cardbuddys",
+    "country": "Deutschland",
+    "url": "https://cardbuddys.de"
+  },
+  {
+    "id": 4,
+    "name": "Lootcave",
+    "country": "Deutschland",
+    "url": "https://lootcave.de"
+  },
+  {
+    "id": 5,
+    "name": "Cardframes",
+    "country": "Deutschland",
+    "url": "https://cardframes.de"
+  },
+  {
+    "id": 6,
+    "name": "Collect-it",
+    "country": "Deutschland",
+    "url": "https://collect-it.de"
+  },
+  {
+    "id": 7,
+    "name": "Comic Planet",
+    "country": "Deutschland",
+    "url": "https://comicplanet.de"
+  },
+  {
+    "id": 8,
+    "name": "Yonko TCG",
+    "country": "Deutschland",
+    "url": "https://yonkotcg.de"
+  },
+  {
+    "id": 9,
+    "name": "Zuris Shop",
+    "country": "Deutschland",
+    "url": "https://zuris-shop.de"
+  },
+  {
+    "id": 10,
+    "name": "Card Corner",
+    "country": "Deutschland",
+    "url": "https://cardcorner.de"
+  },
+  {
+    "id": 11,
+    "name": "Gate to the Games",
+    "country": "Deutschland",
+    "url": "https://www.gate-to-the-games.de"
+  },
+  {
+    "id": 12,
+    "name": "Trader-Online",
+    "country": "Deutschland",
+    "url": "https://www.trader-online.de"
+  },
+  {
+    "id": 13,
+    "name": "JK Entertainment",
+    "country": "Deutschland",
+    "url": "https://www.jk-entertainment.de"
+  },
+  {
+    "id": 14,
+    "name": "FantasyWelt",
+    "country": "Deutschland",
+    "url": "https://www.fantasywelt.de"
+  },
+  {
+    "id": 15,
+    "name": "BB-Spiele",
+    "country": "Deutschland",
+    "url": "https://www.bb-spiele.de"
+  },
+  {
+    "id": 16,
+    "name": "Spiele-Offensive",
+    "country": "Deutschland",
+    "url": "https://www.spiele-offensive.de"
+  },
+  {
+    "id": 17,
+    "name": "TCG-Corner",
+    "country": "Niederlande",
+    "url": "https://tcg-corner.com"
+  },
+  {
+    "id": 18,
+    "name": "TCGCave",
+    "country": "Niederlande",
+    "url": "https://tcgcave.com"
+  },
+  {
+    "id": 19,
+    "name": "Rapp Collect",
+    "country": "Niederlande",
+    "url": "https://rappcollect.com"
+  },
+  {
+    "id": 20,
+    "name": "ShinyVerse",
+    "country": "Niederlande",
+    "url": "https://shinyverse.eu"
+  },
+  {
+    "id": 21,
+    "name": "Pikamon",
+    "country": "Niederlande",
+    "url": "https://pikamon.eu"
+  },
+  {
+    "id": 22,
+    "name": "PlayPeak",
+    "country": "Niederlande",
+    "url": "https://playpeak.eu"
+  },
+  {
+    "id": 23,
+    "name": "Parkage",
+    "country": "Frankreich",
+    "url": "https://parkage.com"
+  },
+  {
+    "id": 24,
+    "name": "Mana Noir",
+    "country": "Frankreich",
+    "url": "https://mananoir.com"
+  },
+  {
+    "id": 25,
+    "name": "Poké Corner",
+    "country": "Frankreich",
+    "url": "https://pokecorner.fr"
+  },
+  {
+    "id": 26,
+    "name": "DracauGames",
+    "country": "Frankreich",
+    "url": "https://dracaugames.com"
+  },
+  {
+    "id": 27,
+    "name": "Ludifolie",
+    "country": "Frankreich",
+    "url": "https://www.ludifolie.com"
+  },
+  {
+    "id": 28,
+    "name": "UltraJeux",
+    "country": "Frankreich",
+    "url": "https://www.ultrajeux.com"
+  },
+  {
+    "id": 29,
+    "name": "Master of Games",
+    "country": "Spanien",
+    "url": "https://masterofgames.es"
+  },
+  {
+    "id": 30,
+    "name": "Cardzone",
+    "country": "Spanien",
+    "url": "https://cardzone.es"
+  },
+  {
+    "id": 31,
+    "name": "Metamorph Center",
+    "country": "Spanien",
+    "url": "https://metamorphcenter.com"
+  },
+  {
+    "id": 32,
+    "name": "Arcotcg",
+    "country": "Spanien",
+    "url": "https://arcotcg.com"
+  },
+  {
+    "id": 33,
+    "name": "Dungeon Marvels",
+    "country": "Spanien",
+    "url": "https://dungeonmarvels.com"
+  },
+  {
+    "id": 34,
+    "name": "GoblinTrader",
+    "country": "Spanien",
+    "url": "https://www.goblintrader.es"
+  },
+  {
+    "id": 35,
+    "name": "Magic Store",
+    "country": "Italien",
+    "url": "https://magicstore.it"
+  },
+  {
+    "id": 36,
+    "name": "Fantasia Store",
+    "country": "Italien",
+    "url": "https://fantasiastore.it"
+  },
+  {
+    "id": 37,
+    "name": "Games Academy",
+    "country": "Italien",
+    "url": "https://www.gamesacademy.it"
+  },
+  {
+    "id": 38,
+    "name": "CardGameClub",
+    "country": "Italien",
+    "url": "https://cardgameclub.it"
+  },
+  {
+    "id": 39,
+    "name": "Chaos Cards",
+    "country": "UK",
+    "url": "https://www.chaoscards.co.uk"
+  },
+  {
+    "id": 40,
+    "name": "Magic Madhouse",
+    "country": "UK",
+    "url": "https://magicmadhouse.co.uk"
+  },
+  {
+    "id": 41,
+    "name": "Total Cards",
+    "country": "UK",
+    "url": "https://totalcards.net"
+  },
+  {
+    "id": 42,
+    "name": "Zatu Games",
+    "country": "UK",
+    "url": "https://www.board-game.co.uk"
+  },
+  {
+    "id": 43,
+    "name": "Unicorn Cards",
+    "country": "UK",
+    "url": "https://www.unicorncards.co.uk"
+  },
+  {
+    "id": 44,
+    "name": "The Brotherhood Games",
+    "country": "UK",
+    "url": "https://thebrotherhoodgames.co.uk"
+  },
+  {
+    "id": 45,
+    "name": "Gathering Games",
+    "country": "UK",
+    "url": "https://www.gatheringgames.co.uk"
+  },
+  {
+    "id": 46,
+    "name": "Big Orbit Cards",
+    "country": "UK",
+    "url": "https://www.bigorbitcards.co.uk"
+  },
+  {
+    "id": 47,
+    "name": "Japan2UK",
+    "country": "UK",
+    "url": "https://japan2uk.com"
+  },
+  {
+    "id": 48,
+    "name": "EuroTCG",
+    "country": "Polen",
+    "url": "https://www.eurotcg.com"
+  },
+  {
+    "id": 49,
+    "name": "Mepel",
+    "country": "Polen",
+    "url": "https://www.mepel.pl"
+  },
+  {
+    "id": 50,
+    "name": "Rebel",
+    "country": "Polen",
+    "url": "https://www.rebel.pl"
+  }
+]

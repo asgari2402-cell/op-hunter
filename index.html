@@ -3,482 +3,439 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>OP Hunter – One Piece TCG Cloud Radar</title>
+<meta name="theme-color" content="#08111f">
+<title>OP Hunter V3 – One Piece TCG Radar</title>
 <style>
-:root {
-  --bg:#07111f; --panel:#0d1b2d; --panel2:#12243a; --text:#eef5ff;
-  --muted:#91a6bf; --accent:#ffcc38; --red:#ff5566; --green:#36d399;
-  --blue:#57a6ff; --border:#233a55;
+:root{
+ --bg:#07101c;--sidebar:#091524;--panel:#0d1b2d;--panel2:#11243a;--line:#223a54;
+ --text:#f4f7fb;--muted:#91a4ba;--accent:#f7c948;--green:#32d296;--blue:#5ca9ff;
+ --red:#ff6577;--orange:#ff9f43;--purple:#a78bfa;--shadow:0 18px 60px #0005;
 }
 *{box-sizing:border-box}
-body{margin:0;font-family:Inter,system-ui,Segoe UI,Arial,sans-serif;background:
-radial-gradient(circle at 10% 0%,#152d4c 0,transparent 34%),var(--bg);color:var(--text)}
+html{scroll-behavior:smooth}
+body{margin:0;background:radial-gradient(circle at 80% -10%,#183c61 0,transparent 28%),var(--bg);
+color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Arial,sans-serif}
+button,input,select{font:inherit}
+button{cursor:pointer}
 a{color:inherit}
-header{padding:26px clamp(18px,4vw,54px) 18px;border-bottom:1px solid var(--border);
-position:sticky;top:0;z-index:10;background:rgba(7,17,31,.93);backdrop-filter:blur(14px)}
-.brand{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
-.logo{width:50px;height:50px;border-radius:15px;background:linear-gradient(135deg,var(--accent),#ff6f3c);
-display:grid;place-items:center;font-size:27px;box-shadow:0 10px 30px #ffb00033}
-h1{font-size:clamp(24px,4vw,40px);margin:0;letter-spacing:-.04em}
-.subtitle{color:var(--muted);margin:5px 0 0}
-main{padding:22px clamp(18px,4vw,54px) 60px;max-width:1500px;margin:auto}
-.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
-.card{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--border);
-border-radius:18px;padding:18px;box-shadow:0 16px 40px #0003}
-.kpi .value{font-size:31px;font-weight:800;margin-top:8px}
-.kpi .label{color:var(--muted);font-size:13px;text-transform:uppercase;letter-spacing:.08em}
-.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin:20px 0}
-input,select,button{border:1px solid var(--border);background:#0b1929;color:var(--text);
-padding:11px 13px;border-radius:12px;font:inherit}
-input{min-width:240px;flex:1}
-button{cursor:pointer;font-weight:700}
-button.primary{background:var(--accent);color:#151515;border-color:transparent}
-button:hover{transform:translateY(-1px)}
-.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:20px 0 12px}
-.tab{padding:9px 13px;border-radius:999px;background:#0b1929;border:1px solid var(--border);cursor:pointer}
-.tab.active{background:var(--accent);color:#151515;border-color:var(--accent)}
-.section-title{display:flex;justify-content:space-between;align-items:end;gap:12px;margin:24px 0 12px}
-.section-title h2{margin:0;font-size:22px}
-.small{font-size:12px;color:var(--muted)}
-.alerts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
-.alert{position:relative;overflow:hidden}
-.alert:before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--accent)}
-.badge{display:inline-flex;padding:5px 8px;border-radius:999px;font-size:11px;font-weight:800;
-text-transform:uppercase;letter-spacing:.06em}
-.new{background:#ffcc3822;color:var(--accent)} .stock{background:#36d39922;color:var(--green)}
-.pre{background:#57a6ff22;color:var(--blue)} .price{background:#ff556622;color:#ff8490}
-.alert h3{margin:12px 0 8px;font-size:17px}
-.meta{display:grid;grid-template-columns:90px 1fr;gap:6px;font-size:13px}
-.meta span:nth-child(odd){color:var(--muted)}
-.shop-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
-.shop{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:13px;
-background:#0b1929;border:1px solid var(--border);border-radius:14px}
-.shop-info{min-width:0}
-.shop-name{font-weight:750;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.shop-country{font-size:12px;color:var(--muted)}
-.open{text-decoration:none;background:#17304b;padding:8px 10px;border-radius:9px;font-size:12px}
-.status-dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 12px var(--green)}
-.notice{margin-top:22px;padding:14px 16px;border:1px solid #8c6c15;background:#30270e;border-radius:14px;color:#ffe59a}
-footer{color:var(--muted);text-align:center;padding:28px}
-@media(max-width:1000px){.grid{grid-template-columns:repeat(2,1fr)}.alerts,.shop-list{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:650px){.grid,.alerts,.shop-list{grid-template-columns:1fr}header{position:static}}
-
-.product-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
-.product-card{padding:0;overflow:hidden;cursor:pointer;transition:.18s transform,.18s border-color}
-.product-card:hover{transform:translateY(-4px);border-color:#4d6d91}
-.product-art{height:190px;display:grid;place-items:center;position:relative;background:
-radial-gradient(circle at 70% 20%,#ffcc3844,transparent 33%),
-linear-gradient(145deg,#183656,#091727);overflow:hidden}
-.product-art:after{content:"";position:absolute;inset:12px;border:1px solid #ffffff22;border-radius:14px}
-.product-code{font-size:34px;font-weight:900;letter-spacing:-.06em;z-index:1;text-shadow:0 5px 20px #000}
-.product-symbol{position:absolute;font-size:120px;opacity:.08;transform:rotate(-12deg)}
-.product-body{padding:15px}
-.product-body h3{margin:7px 0 10px;font-size:15px;min-height:38px}
-.product-bottom{display:grid;grid-template-columns:minmax(105px,.8fr) minmax(220px,2.2fr) minmax(125px,.8fr) 110px;gap:16px;align-items:center;width:100%}
-.release{font-size:12px;color:var(--muted)}
-.future-chip{display:inline-flex;background:#57a6ff22;color:var(--blue);border:1px solid #57a6ff44;
-padding:6px 9px;border-radius:999px;font-size:10px;font-weight:900;white-space:nowrap}
-.modal{position:fixed;inset:0;background:#020812dd;z-index:30;display:none;align-items:center;justify-content:center;padding:18px}
-.modal.open{display:flex}.modal-box{width:min(920px,100%);max-height:92vh;overflow:auto;background:var(--panel);
-border:1px solid var(--border);border-radius:22px;box-shadow:0 30px 90px #000;padding:20px}
-.modal-head{display:flex;justify-content:space-between;gap:15px}.modal-close{font-size:22px;padding:6px 11px}
-.detail-hero{display:grid;grid-template-columns:280px 1fr;gap:22px;margin-top:14px}
-.detail-art{min-height:310px;border-radius:18px;background:radial-gradient(circle at 60% 20%,#ffcc3855,transparent 30%),
-linear-gradient(145deg,#1b4169,#071321);display:grid;place-items:center;position:relative;overflow:hidden}
-.detail-art .product-code{font-size:54px}.detail-art .product-symbol{font-size:180px}
-.shop-buttons{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-top:13px}
-.shop-link{display:flex;justify-content:space-between;text-decoration:none;background:#10243a;border:1px solid var(--border);
-padding:11px;border-radius:11px}.shop-link:hover{border-color:var(--accent)}
-.source-link{display:inline-block;margin-top:12px;color:var(--accent)}
-.catalog-note{padding:12px 14px;border-radius:12px;background:#0b1929;border:1px solid var(--border);color:var(--muted);font-size:13px}
-@media(max-width:1050px){.product-grid{grid-template-columns:repeat(3,1fr)}}
-@media(max-width:760px){.product-grid{grid-template-columns:repeat(2,1fr)}.detail-hero{grid-template-columns:1fr}.detail-art{min-height:230px}}
-@media(max-width:500px){.product-grid{grid-template-columns:1fr}.shop-buttons{grid-template-columns:1fr}}
-
-
-.product-grid{display:flex!important;flex-direction:column;gap:8px!important}
-.product-card{display:grid!important;grid-template-columns:115px minmax(250px,1.5fr) minmax(130px,.7fr) 145px 95px;
-align-items:center;padding:10px 14px!important;min-height:86px}
-.product-card .product-art{height:64px!important;border-radius:10px}
-.product-card .product-code{font-size:22px!important}
-.product-card .product-symbol{font-size:55px!important}
-.product-card .product-body{display:contents}
-.product-card .product-body h3{min-height:0!important;margin:0 12px!important}
-.product-card .badge{justify-self:start}
-.product-card .product-bottom{display:contents}
-.product-card .release{font-size:12px}
-.product-card .details-arrow{text-align:right}
-.custom-product-row{border-style:dashed!important}
-.availability-state{padding:14px;border-radius:12px;background:#0b1929;border:1px solid var(--border);margin-top:12px}
-.availability-list{display:flex;flex-direction:column;gap:8px;margin-top:10px}
-.offer{display:grid;grid-template-columns:minmax(140px,1fr) 120px 100px 95px;gap:10px;align-items:center;
-padding:12px;background:#10243a;border:1px solid var(--border);border-radius:12px;text-decoration:none}
-.offer:hover{border-color:var(--green)}.offer-price{font-weight:900}.offer-status{color:var(--green);font-weight:800}
-.scan-spinner{display:inline-block;width:16px;height:16px;border:2px solid #ffffff44;border-top-color:var(--accent);
-border-radius:50%;animation:spin .8s linear infinite;vertical-align:-3px;margin-right:7px}
-@keyframes spin{to{transform:rotate(360deg)}}
-@media(max-width:850px){.product-card{grid-template-columns:90px 1fr 120px}.product-card .badge{display:none}
-.product-card .release{display:none}.product-card .details-arrow{display:block}.offer{grid-template-columns:1fr 100px}}
-@media(max-width:520px){.product-card{grid-template-columns:70px 1fr 40px}.product-card .product-art{height:52px!important}
-.offer{grid-template-columns:1fr}.offer>*{text-align:left}}
-
-
-.product-status-cell{display:flex;align-items:center;justify-content:flex-start}
-.product-search-help{font-size:12px;color:var(--muted);margin:-10px 0 12px}
-.product-empty{padding:24px;text-align:center;border:1px dashed var(--border);border-radius:14px;color:var(--muted)}
-.scan-button{background:var(--accent);color:#111;border-radius:10px;padding:9px 12px;text-align:center}
-.scanner-ok{color:var(--green)}.scanner-bad{color:#ff9b62}
-@media(max-width:760px){
- .product-bottom{grid-template-columns:1fr 1fr;gap:9px}
- .product-body h3{grid-column:1/-1}
-}
-
+.app{min-height:100vh;display:grid;grid-template-columns:250px minmax(0,1fr)}
+.sidebar{position:sticky;top:0;height:100vh;background:linear-gradient(180deg,#0b192a,#07111e);
+border-right:1px solid var(--line);padding:20px 14px;display:flex;flex-direction:column;z-index:20}
+.brand{display:flex;align-items:center;gap:12px;padding:2px 8px 20px}
+.logo{width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,var(--accent),#ff774c);
+display:grid;place-items:center;font-size:23px;box-shadow:0 12px 30px #ffb0002f}
+.brand b{font-size:19px}.brand span{display:block;color:var(--muted);font-size:11px;margin-top:2px}
+.nav{display:grid;gap:4px}
+.nav button{border:0;background:transparent;color:var(--muted);display:flex;align-items:center;gap:11px;
+padding:11px 12px;border-radius:11px;text-align:left;font-weight:650}
+.nav button:hover{background:#ffffff08;color:var(--text)}.nav button.active{background:#18304b;color:#fff}
+.nav .count{margin-left:auto;background:#ffffff0d;padding:2px 7px;border-radius:999px;font-size:11px}
+.sidebar-footer{margin-top:auto;padding:12px;color:var(--muted);font-size:11px;line-height:1.5}
+.main{min-width:0}
+.topbar{height:72px;position:sticky;top:0;z-index:15;background:#07101cdd;backdrop-filter:blur(16px);
+border-bottom:1px solid var(--line);display:flex;align-items:center;gap:12px;padding:0 clamp(16px,3vw,34px)}
+.mobile-menu{display:none}
+.global-search{position:relative;flex:1;max-width:680px}
+.global-search input{width:100%;background:#0d1b2d;border:1px solid var(--line);color:var(--text);
+padding:12px 16px 12px 42px;border-radius:13px;outline:none}
+.global-search input:focus{border-color:#5ca9ff99;box-shadow:0 0 0 3px #5ca9ff15}
+.search-icon{position:absolute;left:15px;top:11px;color:var(--muted)}
+.scan-pill{display:flex;align-items:center;gap:8px;background:#0d1b2d;border:1px solid var(--line);
+padding:9px 12px;border-radius:12px;font-size:12px;color:var(--muted);white-space:nowrap}
+.live-dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 12px var(--green)}
+.content{padding:24px clamp(16px,3vw,34px) 60px;max-width:1700px;margin:auto}
+.view{display:none}.view.active{display:block}
+.page-head{display:flex;justify-content:space-between;align-items:flex-end;gap:14px;margin-bottom:20px}
+.page-head h1{margin:0;font-size:clamp(25px,3vw,38px);letter-spacing:-.04em}
+.page-head p{margin:6px 0 0;color:var(--muted)}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+.btn{border:1px solid var(--line);background:#102239;color:var(--text);padding:10px 13px;border-radius:11px;font-weight:700}
+.btn:hover{transform:translateY(-1px);border-color:#456687}.btn.primary{background:var(--accent);border-color:var(--accent);color:#121212}
+.kpis{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px;margin-bottom:18px}
+.kpi{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);
+border-radius:16px;padding:16px;min-width:0}
+.kpi .label{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.08em}
+.kpi .value{font-size:27px;font-weight:850;margin-top:7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kpi .sub{color:var(--muted);font-size:11px;margin-top:5px}
+.dashboard-grid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(310px,.7fr);gap:14px}
+.panel{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:17px;overflow:hidden}
+.panel-head{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:16px 18px;border-bottom:1px solid var(--line)}
+.panel-head h2{font-size:16px;margin:0}.panel-body{padding:16px 18px}
+.status-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.status-item{background:#081625;border:1px solid var(--line);border-radius:13px;padding:13px}
+.status-item b{display:block;font-size:18px}.status-item span{color:var(--muted);font-size:11px}
+.activity-list{display:grid;gap:9px}
+.activity{display:grid;grid-template-columns:10px minmax(0,1fr) auto;gap:11px;align-items:start;padding:10px 0;border-bottom:1px solid #ffffff09}
+.activity:last-child{border-bottom:0}.event-dot{width:9px;height:9px;border-radius:50%;margin-top:5px;background:var(--blue)}
+.activity.new_offer .event-dot{background:var(--green)}.activity.price_drop .event-dot{background:var(--accent)}
+.activity.price_rise .event-dot{background:var(--orange)}.activity.removed_offer .event-dot{background:var(--red)}
+.activity b{font-size:13px}.activity p{margin:3px 0;color:var(--muted);font-size:12px}
+.activity time{font-size:10px;color:var(--muted);white-space:nowrap}
+.toolbar{display:flex;gap:9px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.toolbar input,.toolbar select{background:#0d1b2d;border:1px solid var(--line);color:var(--text);
+padding:10px 12px;border-radius:11px;outline:none}
+.toolbar input{min-width:230px;flex:1}
+.filter-drawer{background:#0b1929;border:1px solid var(--line);border-radius:15px;padding:14px;margin-bottom:14px}
+.filter-grid{display:grid;grid-template-columns:repeat(6,minmax(130px,1fr));gap:10px}
+.field label{display:block;color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.07em;margin:0 0 5px 3px}
+.field input,.field select{width:100%;background:#071522;border:1px solid var(--line);color:var(--text);padding:10px;border-radius:10px}
+.toggle-group{display:flex;gap:6px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:#0c1c2e;color:var(--muted);padding:7px 10px;border-radius:999px;font-size:11px}
+.chip.active{color:#111;background:var(--accent);border-color:var(--accent)}
+.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:15px}
+table{width:100%;border-collapse:collapse;min-width:1000px;background:#0b1929}
+th{position:sticky;top:0;background:#102238;color:var(--muted);font-size:10px;text-transform:uppercase;
+letter-spacing:.07em;text-align:left;padding:11px 13px;border-bottom:1px solid var(--line);z-index:2}
+td{padding:12px 13px;border-bottom:1px solid #ffffff09;font-size:12px;vertical-align:middle}
+tr:hover td{background:#ffffff03}
+.product-cell{display:flex;align-items:center;gap:10px;min-width:260px}
+.thumb{width:48px;height:48px;border-radius:11px;background:radial-gradient(circle at 70% 20%,#f7c94855,transparent 35%),#17324f;
+display:grid;place-items:center;font-weight:900;font-size:11px;flex:none;border:1px solid #ffffff15}
+.product-cell b{font-size:13px}.product-cell small{display:block;color:var(--muted);margin-top:3px}
+.badge{display:inline-flex;align-items:center;padding:5px 8px;border-radius:999px;font-size:10px;font-weight:800;white-space:nowrap}
+.badge.stock{color:var(--green);background:#32d29617}.badge.pre{color:var(--blue);background:#5ca9ff17}
+.badge.none{color:var(--muted);background:#ffffff08}.badge.planned{color:var(--accent);background:#f7c94817}
+.badge.verified{color:var(--green);background:#32d29612;border:1px solid #32d29625}
+.price{font-weight:850;font-size:13px}.muted{color:var(--muted)}.star{border:0;background:transparent;color:#5b6f84;font-size:20px;padding:4px}
+.star.on{color:var(--accent)}
+.cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px}
+.product-card{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:17px;overflow:hidden}
+.card-art{height:130px;background:radial-gradient(circle at 70% 20%,#f7c94855,transparent 30%),linear-gradient(145deg,#21466d,#0a1725);
+display:grid;place-items:center;font-size:29px;font-weight:900;position:relative}
+.card-art .star{position:absolute;right:8px;top:7px}.card-body{padding:14px}.card-body h3{font-size:14px;margin:9px 0;min-height:34px}
+.card-meta{display:flex;justify-content:space-between;gap:8px;color:var(--muted);font-size:11px}
+.offer-list{display:grid;gap:8px}
+.offer{display:grid;grid-template-columns:minmax(160px,1.5fr) 110px 120px 95px;gap:10px;align-items:center;
+padding:12px;border:1px solid var(--line);background:#0b1929;border-radius:12px;text-decoration:none}
+.offer:hover{border-color:#4e7195}.offer strong{font-size:13px}.offer small{display:block;color:var(--muted);margin-top:3px}
+.calendar{display:grid;gap:14px}.month{border:1px solid var(--line);border-radius:15px;overflow:hidden;background:#0b1929}
+.month h3{margin:0;padding:13px 15px;background:#102238;font-size:14px}
+.release-row{display:grid;grid-template-columns:90px 110px minmax(0,1fr) auto;gap:12px;align-items:center;padding:12px 15px;border-top:1px solid #ffffff08}
+.release-row:first-of-type{border-top:0}
+.shop-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.shop-card{background:#0b1929;border:1px solid var(--line);border-radius:14px;padding:13px}
+.shop-card .top{display:flex;justify-content:space-between;gap:8px}.shop-card p{color:var(--muted);font-size:11px;margin:7px 0 0}
+.progress{height:7px;background:#07111d;border-radius:999px;overflow:hidden;margin-top:10px}.progress span{display:block;height:100%;background:var(--green)}
+.empty{padding:35px;text-align:center;color:var(--muted)}.empty b{display:block;color:var(--text);margin-bottom:6px}
+.modal{position:fixed;inset:0;background:#020710db;z-index:50;display:none;align-items:center;justify-content:center;padding:18px}
+.modal.open{display:flex}.modal-box{width:min(1050px,100%);max-height:92vh;overflow:auto;background:#0a1726;border:1px solid var(--line);border-radius:21px;box-shadow:var(--shadow)}
+.modal-head{display:flex;justify-content:space-between;gap:15px;padding:20px;border-bottom:1px solid var(--line)}
+.modal-head h2{margin:4px 0 0}.close{border:1px solid var(--line);background:#102238;color:white;border-radius:11px;width:40px;height:40px;font-size:20px}
+.modal-content{display:grid;grid-template-columns:280px minmax(0,1fr);gap:20px;padding:20px}
+.detail-art{height:310px;border-radius:17px;background:radial-gradient(circle at 70% 20%,#f7c94855,transparent 30%),linear-gradient(145deg,#21466d,#0a1725);display:grid;place-items:center;font-size:43px;font-weight:900}
+.detail-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:13px}.detail-stat{background:#0e2034;border:1px solid var(--line);padding:11px;border-radius:11px}
+.detail-stat span{display:block;color:var(--muted);font-size:10px;text-transform:uppercase}.detail-stat b{display:block;margin-top:5px;font-size:13px}
+.spark{height:110px;background:#081624;border:1px solid var(--line);border-radius:12px;padding:8px;margin:12px 0}
+.spark svg{width:100%;height:100%}
+.toast{position:fixed;right:20px;bottom:20px;z-index:70;background:#11243a;border:1px solid var(--line);box-shadow:var(--shadow);padding:12px 15px;border-radius:12px;display:none}
+.toast.show{display:block}
+@media(max-width:1350px){.kpis{grid-template-columns:repeat(3,1fr)}.cards{grid-template-columns:repeat(3,1fr)}.filter-grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:1000px){.app{grid-template-columns:1fr}.sidebar{position:fixed;left:-270px;transition:.2s;width:250px}.sidebar.open{left:0}.mobile-menu{display:block}.dashboard-grid{grid-template-columns:1fr}.cards{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:680px){.content{padding:16px 12px 45px}.topbar{padding:0 12px}.scan-pill{display:none}.kpis{grid-template-columns:repeat(2,1fr)}.filter-grid{grid-template-columns:1fr 1fr}.cards,.shop-grid{grid-template-columns:1fr}.modal-content{grid-template-columns:1fr}.detail-art{height:200px}.offer{grid-template-columns:1fr 1fr}.release-row{grid-template-columns:75px 1fr}}
 </style>
 </head>
 <body>
-<header>
-  <div class="brand">
-    <div class="logo">🏴‍☠️</div>
-    <div>
-      <h1>OP Hunter</h1>
-      <p class="subtitle">One Piece Trading Card Game – Produkt- & Verfügbarkeits-Radar</p>
-    </div>
-  </div>
+<div class="app">
+<aside class="sidebar" id="sidebar">
+ <div class="brand"><div class="logo">🏴‍☠️</div><div><b>OP Hunter</b><span>TCG Product Radar V3</span></div></div>
+ <nav class="nav" id="nav">
+  <button class="active" data-view="overview">◫ Übersicht</button>
+  <button data-view="products">▦ Produkte <span class="count" id="navProducts">0</span></button>
+  <button data-view="offers">€ Angebote <span class="count" id="navOffers">0</span></button>
+  <button data-view="preorders">◷ Vorbestellungen <span class="count" id="navPreorders">0</span></button>
+  <button data-view="calendar">▣ Release-Kalender</button>
+  <button data-view="watchlist">★ Watchlist <span class="count" id="navWatchlist">0</span></button>
+  <button data-view="activity">⚡ Aktivitäten <span class="count" id="navEvents">0</span></button>
+  <button data-view="shops">⌂ Shops <span class="count">50</span></button>
+  <button data-view="system">⚙ Systemstatus</button>
+ </nav>
+ <div class="sidebar-footer">Daten aus automatischen GitHub-Actions-Scans.<br>Nur bestätigte Direktlinks werden angezeigt.</div>
+</aside>
+
+<main class="main">
+<header class="topbar">
+ <button class="btn mobile-menu" id="menuBtn">☰</button>
+ <div class="global-search"><span class="search-icon">⌕</span><input id="globalSearch" placeholder="Produkt, Setnummer oder Händler suchen …"></div>
+ <div class="scan-pill"><span class="live-dot"></span><span id="topScan">Daten werden geladen …</span></div>
 </header>
 
-<main>
-
-  <div class="card" id="cloudStatus" style="margin-bottom:14px">
-    <b>☁ Cloud-Scanner:</b> <span id="cloudStatusText">Status wird geladen …</span>
+<div class="content">
+<section class="view active" id="view-overview">
+ <div class="page-head"><div><h1>Übersicht</h1><p>Dein One Piece TCG Markt- und Verfügbarkeitsradar.</p></div><div class="actions"><button class="btn" onclick="refreshData()">↻ Daten neu laden</button><button class="btn primary" onclick="goView('products')">Produkte öffnen</button></div></div>
+ <div class="kpis" id="kpis"></div>
+ <div class="dashboard-grid">
+  <div class="panel">
+   <div class="panel-head"><h2>Aktuelle Angebote</h2><button class="btn" onclick="goView('offers')">Alle anzeigen</button></div>
+   <div class="panel-body"><div class="offer-list" id="overviewOffers"></div></div>
   </div>
-
-  <section class="grid">
-    <div class="card kpi"><div class="label">Überwachte Shops</div><div class="value" id="shopCount">0</div></div>
-    <div class="card kpi"><div class="label">Aktive Alerts</div><div class="value" id="alertCount">3</div></div>
-    <div class="card kpi"><div class="label">Verfügbar</div><div class="value" style="color:var(--green)">1</div></div>
-    <div class="card kpi"><div class="label">Letzte Prüfung</div><div class="value" id="lastCheck" style="font-size:20px">Noch nicht</div></div>
-  </section>
-
-  <div class="toolbar">
-    <input id="search" placeholder="Shop, Land oder Produkt suchen …">
-    <select id="country"><option value="">Alle Länder</option></select>
-    <button class="primary" id="scanBtn">🔎 Prüfung protokollieren</button>
-    <button id="exportBtn">⬇ Daten exportieren</button>
-  </div>
-
-  <div class="tabs">
-    <div class="tab active" data-view="alerts">Alerts</div>
-    <div class="tab" data-view="products">Produkte</div>
-    <div class="tab" data-view="shops">Shop-Radar</div>
-    <div class="tab" data-view="settings">Einstellungen</div>
-  </div>
-
-  <section id="alertsView">
-    <div class="section-title"><h2>🚨 ONE PIECE TCG ALERTS</h2><span class="small">Demo-Einträge – direkt im Browser editierbar</span></div>
-    <div class="alerts" id="alerts"></div>
-  </section>
-
-
-  <section id="productsView" hidden>
-    <div class="section-title">
-      <div><h2>📦 One Piece TCG Produktkatalog</h2><span class="small">Klick auf ein Produkt: Details, Release und Händler-Suche</span></div>
-      <span class="small" id="productResultCount"></span>
-    </div>
-    <div class="toolbar">
-      <input id="productSearch" list="productSuggestions" autocomplete="off" placeholder="Beliebiges Produkt, z. B. OP-17 Display oder Starter Deck …">
-      <datalist id="productSuggestions"></datalist>
-      <button class="primary" id="productSearchBtn">🔎 Suchen / prüfen</button>
-      <select id="productCategory"><option value="">Alle Produkttypen</option></select>
-      <select id="productPeriod">
-        <option value="">Alle Releases</option>
-        <option value="upcoming">Kommend / geplant</option>
-        <option value="released">Bereits erschienen</option>
-      </select>
-    </div>
-    <div class="product-search-help">Die Eingabe filtert sofort. Mit Enter oder „Suchen / prüfen“ wird auch ein nicht katalogisiertes Produkt über alle 50 Shops geprüft.</div>
-    <div class="catalog-note">Die Produktprüfung durchsucht die 50 Shops aus deiner Excel-Datei. Angezeigt werden ausschließlich erkannte Angebote mit positivem Lager- oder Vorbestellstatus. Die Lagerdaten werden automatisch durch GitHub Actions aktualisiert. Auf diesem Gerät ist keine Installation erforderlich.</div>
-    <div class="product-grid" id="productGrid" style="margin-top:14px"></div>
-  </section>
-
-  <section id="shopsView" hidden>
-    <div class="section-title"><h2>Shop-Radar</h2><span class="small" id="resultCount"></span></div>
-    <div class="shop-list" id="shopList"></div>
-  </section>
-
-  <section id="settingsView" hidden>
-    <div class="section-title"><h2>Einstellungen</h2></div>
-    <div class="card">
-      <p><b>Priorität:</b> Neue Produkte → Vorbestellungen → Restocks → Preisänderungen</p>
-      <p><b>Geplante Uhrzeit:</b> täglich 06:00 Uhr (Europe/Berlin)</p>
-      <label><input type="checkbox" id="autoRefresh"> Dashboard beim Öffnen automatisch aktualisieren</label>
-      <p class="small">Die Einstellung wird lokal in diesem Browser gespeichert.</p>
-    </div>
-  </section>
-
-  <div class="notice">
-    <b>Wichtig:</b> Diese einzelne HTML-Datei kann Shops wegen Browser-Sicherheitsregeln nicht selbstständig im Hintergrund durchsuchen.
-    Für echte tägliche Scans um 06:00 Uhr braucht sie zusätzlich einen laufenden Server, Cronjob oder Automationsdienst.
-    Der Produktkatalog wird täglich mit der offiziellen One-Piece-Card-Game-Seite abgeglichen. Angezeigt werden nur bestätigte Direktlinks zu Produktdetailseiten mit eindeutigem Bestell- oder Vorbestellstatus.
-  </div>
-</main>
-
-<div class="modal" id="productModal" aria-hidden="true">
- <div class="modal-box">
-  <div class="modal-head"><div><span class="badge pre" id="modalCategory"></span><h2 id="modalTitle"></h2></div>
-  <button class="modal-close" id="modalClose">×</button></div>
-  <div class="detail-hero">
-   <div class="detail-art"><span class="product-symbol">☠</span><span class="product-code" id="modalCode"></span></div>
-   <div>
-    <div class="meta">
-     <span>Setnummer</span><b id="modalSet"></b>
-     <span>Release</span><b id="modalRelease"></b>
-     <span>Sprache</span><b>Englisch / EU</b>
-     <span>Status</span><b id="modalStatus"></b>
-    </div>
-    <a class="source-link" id="officialLink" target="_blank" rel="noopener">Offizielle Produktseite öffnen ↗</a>
-    <div class="availability-state" id="availabilityState">Produkt öffnen, um die Ergebnisse der letzten Cloud-Prüfung zu sehen.</div>
-    <div class="availability-list" id="modalShops"></div>
-    <p class="small">Es werden nur erkannte Lager- und Vorbestelltreffer angezeigt. Preis und Lagerstatus stammen möglichst aus den strukturierten Produktdaten der konkreten Produktseite. Fehlt dort ein eindeutiger Preis, wird bewusst kein Betrag übernommen.</p>
-   </div>
+  <div class="panel">
+   <div class="panel-head"><h2>Neueste Aktivitäten</h2><button class="btn" onclick="goView('activity')">Feed öffnen</button></div>
+   <div class="panel-body"><div class="activity-list" id="overviewActivity"></div></div>
   </div>
  </div>
+ <div class="panel" style="margin-top:14px">
+  <div class="panel-head"><h2>Scan-Abdeckung</h2><span class="muted" id="coverageTime"></span></div>
+  <div class="panel-body"><div class="status-bar" id="coverage"></div></div>
+ </div>
+</section>
+
+<section class="view" id="view-products">
+ <div class="page-head"><div><h1>Produkte</h1><p>Gesamter Katalog mit Live-Verfügbarkeit, Preisen und Watchlist.</p></div><div class="actions"><button class="btn" id="tableViewBtn">☷ Liste</button><button class="btn" id="cardViewBtn">▦ Karten</button></div></div>
+ <div class="filter-drawer">
+  <div class="filter-grid">
+   <div class="field"><label>Produktsuche</label><input id="productSearch" placeholder="z. B. OP-17 oder Heroines"></div>
+   <div class="field"><label>Status</label><select id="statusFilter"><option value="">Alle Status</option><option value="stock">Auf Lager</option><option value="preorder">Vorbestellbar</option><option value="none">Ohne Angebot</option></select></div>
+   <div class="field"><label>Produkttyp</label><select id="categoryFilter"><option value="">Alle Typen</option></select></div>
+   <div class="field"><label>Release</label><select id="releaseFilter"><option value="">Alle Releases</option><option value="30">Nächste 30 Tage</option><option value="90">Nächste 3 Monate</option><option value="180">Nächste 6 Monate</option><option value="released">Bereits erschienen</option><option value="unknown">Termin offen</option></select></div>
+   <div class="field"><label>Maximalpreis</label><input id="maxPrice" type="number" min="0" step="1" placeholder="z. B. 120"></div>
+   <div class="field"><label>Sortierung</label><select id="sortFilter"><option value="release">Release</option><option value="name">Produktname</option><option value="price">Bestpreis</option><option value="offers">Meiste Angebote</option><option value="newest">Neueste Funde</option></select></div>
+  </div>
+  <div class="toolbar" style="margin:12px 0 0"><button class="chip" id="verifiedOnly">Nur bestätigte Preise</button><button class="chip" id="favoritesOnly">Nur Watchlist</button><button class="chip" id="availableOnly">Nur mit Angebot</button><button class="chip" onclick="resetFilters()">Filter zurücksetzen</button><span class="muted" id="productCount"></span></div>
+ </div>
+ <div id="productTable"></div><div id="productCards" class="cards" hidden></div>
+</section>
+
+<section class="view" id="view-offers">
+ <div class="page-head"><div><h1>Verfügbare Angebote</h1><p>Nur bestätigte direkte Produktseiten mit Bestellung oder Vorbestellung.</p></div></div>
+ <div class="toolbar"><input id="offerSearch" placeholder="Produkt oder Händler suchen …"><select id="offerCountry"><option value="">Alle Länder</option></select><select id="offerType"><option value="">Bestellung & Vorbestellung</option><option>Bestellung</option><option>Vorbestellung</option></select><select id="offerSort"><option value="price">Günstigster Preis</option><option value="product">Produkt</option><option value="shop">Händler</option></select></div>
+ <div class="offer-list" id="allOffers"></div>
+</section>
+
+<section class="view" id="view-preorders">
+ <div class="page-head"><div><h1>Vorbestellungen</h1><p>Bestätigte Vorbestellmöglichkeiten für kommende Produkte.</p></div></div>
+ <div class="offer-list" id="preorderOffers"></div>
+</section>
+
+<section class="view" id="view-calendar">
+ <div class="page-head"><div><h1>Release-Kalender</h1><p>Kommende und bereits angekündigte Produkte nach Monat.</p></div></div>
+ <div class="toolbar"><select id="calendarRange"><option value="365">Nächste 12 Monate</option><option value="180">Nächste 6 Monate</option><option value="90">Nächste 3 Monate</option><option value="all">Alle bekannten Releases</option></select></div>
+ <div class="calendar" id="calendar"></div>
+</section>
+
+<section class="view" id="view-watchlist">
+ <div class="page-head"><div><h1>Watchlist</h1><p>Deine lokal im Browser gespeicherten Favoriten.</p></div></div>
+ <div id="watchlistContent"></div>
+</section>
+
+<section class="view" id="view-activity">
+ <div class="page-head"><div><h1>Aktivitäten</h1><p>Neue Angebote, Preisänderungen und nicht mehr bestätigte Treffer.</p></div></div>
+ <div class="toolbar"><select id="eventFilter"><option value="">Alle Ereignisse</option><option value="new_offer">Neue Angebote</option><option value="price_drop">Preissenkungen</option><option value="price_rise">Preiserhöhungen</option><option value="removed_offer">Nicht mehr bestätigt</option></select></div>
+ <div class="panel"><div class="panel-body"><div class="activity-list" id="activityFeed"></div></div></div>
+</section>
+
+<section class="view" id="view-shops">
+ <div class="page-head"><div><h1>Shop-Radar</h1><p>Überwachte Händler und aktuell bestätigte Treffer.</p></div></div>
+ <div class="toolbar"><input id="shopSearch" placeholder="Shop oder Land suchen …"><select id="shopCountry"><option value="">Alle Länder</option></select></div>
+ <div class="shop-grid" id="shopGrid"></div>
+</section>
+
+<section class="view" id="view-system">
+ <div class="page-head"><div><h1>Systemstatus</h1><p>Transparenz über Scan-Zeitpunkt, Umfang und Datenqualität.</p></div></div>
+ <div class="kpis" id="systemKpis"></div>
+ <div class="panel"><div class="panel-head"><h2>Datenqualität</h2></div><div class="panel-body" id="qualityPanel"></div></div>
+</section>
+</div>
+</main>
 </div>
 
-<footer>OP Hunter Cloud Dashboard · automatische GitHub-Actions-Prüfung · erstellt am 24.07.2026</footer>
+<div class="modal" id="productModal"><div class="modal-box">
+ <div class="modal-head"><div><span class="badge planned" id="modalCategory"></span><h2 id="modalTitle"></h2></div><button class="close" onclick="closeModal()">×</button></div>
+ <div class="modal-content">
+  <div><div class="detail-art" id="modalCode"></div><button class="btn" id="modalFavorite" style="width:100%;margin-top:10px"></button></div>
+  <div><div class="detail-grid" id="modalStats"></div><div class="spark" id="modalChart"></div><h3>Bestätigte Händlerangebote</h3><div class="offer-list" id="modalOffers"></div><a id="modalOfficial" class="btn" target="_blank" rel="noopener" style="display:inline-block;text-decoration:none;margin-top:12px">Offizielle Produktseite ↗</a></div>
+ </div>
+</div></div>
+<div class="toast" id="toast"></div>
 
 <script>
-const products = [{"code": "OP-01", "name": "ROMANCE DAWN", "category": "Booster", "release": "02.12.2022", "official": "https://en.onepiece-cardgame.com/products/op01.html"}, {"code": "OP-02", "name": "PARAMOUNT WAR", "category": "Booster", "release": "10.03.2023", "official": "https://en.onepiece-cardgame.com/products/op02.html"}, {"code": "OP-03", "name": "PILLARS OF STRENGTH", "category": "Booster", "release": "30.06.2023", "official": "https://en.onepiece-cardgame.com/products/op03.html"}, {"code": "OP-04", "name": "KINGDOMS OF INTRIGUE", "category": "Booster", "release": "22.09.2023", "official": "https://en.onepiece-cardgame.com/products/op04.html"}, {"code": "OP-05", "name": "AWAKENING OF THE NEW ERA", "category": "Booster", "release": "08.12.2023", "official": "https://en.onepiece-cardgame.com/products/op05.html"}, {"code": "OP-06", "name": "WINGS OF THE CAPTAIN", "category": "Booster", "release": "15.03.2024", "official": "https://en.onepiece-cardgame.com/products/op06.html"}, {"code": "OP-07", "name": "500 YEARS IN THE FUTURE", "category": "Booster", "release": "28.06.2024", "official": "https://en.onepiece-cardgame.com/products/op07.html"}, {"code": "OP-08", "name": "TWO LEGENDS", "category": "Booster", "release": "13.09.2024", "official": "https://en.onepiece-cardgame.com/products/op08.html"}, {"code": "OP-09", "name": "EMPERORS IN THE NEW WORLD", "category": "Booster", "release": "13.12.2024", "official": "https://en.onepiece-cardgame.com/products/op09.html"}, {"code": "OP-10", "name": "ROYAL BLOOD", "category": "Booster", "release": "21.03.2025", "official": "https://en.onepiece-cardgame.com/products/op10.html"}, {"code": "OP-11", "name": "A FIST OF DIVINE SPEED", "category": "Booster", "release": "06.06.2025", "official": "https://en.onepiece-cardgame.com/products/op11.html"}, {"code": "OP-12", "name": "LEGACY OF THE MASTER", "category": "Booster", "release": "22.08.2025", "official": "https://en.onepiece-cardgame.com/products/op12.html"}, {"code": "OP-13", "name": "CARRYING ON HIS WILL", "category": "Booster", "release": "07.11.2025", "official": "https://en.onepiece-cardgame.com/products/op13.html"}, {"code": "OP-14/EB-04", "name": "THE AZURE SEA'S SEVEN", "category": "Booster", "release": "16.01.2026", "official": "https://en.onepiece-cardgame.com/products/"}, {"code": "OP-15/EB-04", "name": "ADVENTURE ON KAMI'S ISLAND", "category": "Booster", "release": "17.04.2026", "official": "https://en.onepiece-cardgame.com/products/"}, {"code": "OP-16", "name": "THE TIME OF BATTLE", "category": "Booster", "release": "31.07.2026", "official": "https://en.onepiece-cardgame.com/products/op16.html"}, {"code": "OP-17", "name": "THE WORLD'S STRONGEST WARRIORS", "category": "Booster", "release": "28.08.2026", "official": "https://en.onepiece-cardgame.com/products/op17.html"}, {"code": "EB-01", "name": "MEMORIAL COLLECTION", "category": "Extra Booster", "release": "03.05.2024", "official": "https://en.onepiece-cardgame.com/products/eb01.html"}, {"code": "EB-02", "name": "ANIME 25TH COLLECTION", "category": "Extra Booster", "release": "09.05.2025", "official": "https://en.onepiece-cardgame.com/products/eb02.html"}, {"code": "EB-03", "name": "ONE PIECE HEROINES EDITION", "category": "Extra Booster", "release": "20.02.2026", "official": "https://en.onepiece-cardgame.com/products/eb03.html"}, {"code": "EB-05", "name": "ONE PIECE HEROINES EDITION vol.2", "category": "Extra Booster", "release": "30.10.2026", "official": "https://en.onepiece-cardgame.com/products/eb05.html"}, {"code": "PRB-01", "name": "ONE PIECE CARD THE BEST", "category": "Premium Booster", "release": "08.11.2024", "official": "https://en.onepiece-cardgame.com/products/"}, {"code": "PRB-02", "name": "ONE PIECE CARD THE BEST vol.2", "category": "Premium Booster", "release": "03.10.2025", "official": "https://en.onepiece-cardgame.com/products/"}, {"code": "ST-01", "name": "Straw Hat Crew", "category": "Starter Deck", "release": "02.12.2022", "official": "https://en.onepiece-cardgame.com/products/"}, {"code": "ST-02", "name": "Worst Generation", "category": "Starter Deck", "release": "02.12.2022", "official": "https://en.onepiece-cardgame.com/products/"}, {"code": "ST-03", "name": "The Seven Warlords of the Sea", "category": "Starter Deck", "release": "02.12.2022", "official": "https://en.onepiece-cardgame.com/products/"}, {"code": "ST-04", "name": "Animal Kingdom Pirates", "category": "Starter Deck", "release": "02.12.2022", "official": "https://en.onepiece-cardgame.com/products/"}, {"code": "ST-05", "name": "ONE PIECE FILM edition", "category": "Starter Deck", "release": "03.02.2023", "official": "https://en.onepiece-cardgame.com/products/"}, {"code": "ST-06", "name": "Absolute Justice", "category": "Starter Deck", "release": "10.03.2023", "official": "https://en.onepiece-cardgame.com/products/"}, {"code": "ST-07", "name": "Big Mom Pirates", "category": "Starter Deck", "release": "21.04.2023", "official": "https://en.onepiece-cardgame.com/products/"}, {"code": "ST-08", "name": "Monkey.D.Luffy", "category": "Starter Deck", "release": "11.08.2023", "official": "https://en.onepiece-cardgame.com/products/"}, {"code": "ST-09", "name": "Yamato", "category": "Starter Deck", "release": "11.08.2023", "official": "https://en.onepiece-cardgame.com/products/"}, {"code": "ST-10", "name": "The Three Captains", "category": "Ultimate Deck", "release": "10.11.2023", "official": "https://en.onepiece-cardgame.com/products/"}, {"code": "ST-11", "name": "Uta", "category": "Starter Deck", "release": "02.02.2024", "official": "https://en.onepiece-cardgame.com/products/"}, {"code": "ST-12", "name": "Zoro & Sanji", "category": "Starter Deck", "release": "15.03.2024", "official": "https://en.onepiece-cardgame.com/products/"}, {"code": "ST-13", "name": "The Three Brothers", "category": "Ultimate Deck", "release": "19.04.2024", "official": "https://en.onepiece-cardgame.com/products/"}, {"code": "ST-14", "name": "3D2Y", "category": "Starter Deck", "release": "16.08.2024", "official": "https://en.onepiece-cardgame.com/products/"}, {"code": "ST-15", "name": "Red Edward.Newgate", "category": "Starter Deck", "release": "25.10.2024", "official": "https://en.onepiece-cardgame.com/products/"}, {"code": "ST-16", "name": "Green Uta", "category": "Starter Deck", "release": "25.10.2024", "official": "https://en.onepiece-cardgame.com/products/"}, {"code": "ST-17", "name": "Blue Donquixote Doflamingo", "category": "Starter Deck", "release": "25.10.2024", "official": "https://en.onepiece-cardgame.com/products/"}, {"code": "ST-18", "name": "Purple Monkey.D.Luffy", "category": "Starter Deck", "release": "25.10.2024", "official": "https://en.onepiece-cardgame.com/products/"}, {"code": "ST-19", "name": "Black Smoker", "category": "Starter Deck", "release": "25.10.2024", "official": "https://en.onepiece-cardgame.com/products/"}, {"code": "ST-20", "name": "Yellow Charlotte Katakuri", "category": "Starter Deck", "release": "25.10.2024", "official": "https://en.onepiece-cardgame.com/products/"}, {"code": "ST-21", "name": "GEAR5", "category": "Starter Deck", "release": "21.03.2025", "official": "https://en.onepiece-cardgame.com/products/"}, {"code": "ST-22", "name": "Ace & Newgate", "category": "Starter Deck", "release": "28.03.2025", "official": "https://en.onepiece-cardgame.com/products/"}, {"code": "ST-23", "name": "Red Shanks", "category": "Starter Deck", "release": "06.06.2025", "official": "https://en.onepiece-cardgame.com/products/"}, {"code": "ST-24", "name": "Green Jewelry Bonney", "category": "Starter Deck", "release": "06.06.2025", "official": "https://en.onepiece-cardgame.com/products/"}, {"code": "ST-25", "name": "Blue Buggy", "category": "Starter Deck", "release": "06.06.2025", "official": "https://en.onepiece-cardgame.com/products/"}, {"code": "ST-26", "name": "Purple/Black Monkey.D.Luffy", "category": "Starter Deck", "release": "06.06.2025", "official": "https://en.onepiece-cardgame.com/products/"}, {"code": "ST-27", "name": "Black Marshall.D.Teach", "category": "Starter Deck", "release": "06.06.2025", "official": "https://en.onepiece-cardgame.com/products/"}, {"code": "ST-28", "name": "Yellow/Green Yamato", "category": "Starter Deck", "release": "06.06.2025", "official": "https://en.onepiece-cardgame.com/products/"}, {"code": "ST-29", "name": "Egghead", "category": "Starter Deck", "release": "16.01.2026", "official": "https://en.onepiece-cardgame.com/products/"}, {"code": "ST-30", "name": "Luffy & Ace", "category": "Starter Deck EX", "release": "17.04.2026", "official": "https://en.onepiece-cardgame.com/products/st30.html"}, {"code": "ST-31", "name": "Red Monkey.D.Luffy", "category": "Starter Deck", "release": "31.07.2026", "official": "https://en.onepiece-cardgame.com/products/st31.html"}, {"code": "ST-32", "name": "Green Roronoa Zoro", "category": "Starter Deck", "release": "31.07.2026", "official": "https://en.onepiece-cardgame.com/products/st32.html"}, {"code": "ST-33", "name": "Blue Kuzan", "category": "Starter Deck", "release": "31.07.2026", "official": "https://en.onepiece-cardgame.com/products/st33.html"}, {"code": "ST-34", "name": "Purple Charlotte Katakuri", "category": "Starter Deck", "release": "31.07.2026", "official": "https://en.onepiece-cardgame.com/products/st34.html"}, {"code": "ST-35", "name": "Red/Black Sabo", "category": "Starter Deck", "release": "31.07.2026", "official": "https://en.onepiece-cardgame.com/products/st35.html"}, {"code": "ST-36", "name": "Yellow Eustass “Captain” Kid", "category": "Starter Deck", "release": "31.07.2026", "official": "https://en.onepiece-cardgame.com/products/st36.html"}, {"code": "DP-12", "name": "Double Pack Set Vol.12", "category": "Double Pack", "release": "28.08.2026", "official": "https://en.onepiece-cardgame.com/products/"}, {"code": "PCC-BS6", "name": "Premium Card Collection – Best Selection Vol.6", "category": "Premium Bandai", "release": "August 2026", "official": "https://en.onepiece-cardgame.com/products/"}, {"code": "3RD-ANNIV", "name": "English Version 3rd Anniversary Set", "category": "Anniversary", "release": "August 2026", "official": "https://en.onepiece-cardgame.com/products/"}, {"code": "HEROINES-SET", "name": "ONE PIECE Heroines Special Set", "category": "Premium Bandai", "release": "September 2026", "official": "https://en.onepiece-cardgame.com/products/"}, {"code": "PCC-LA2-BW", "name": "Live Action Edition vol.2 – Baroque Works", "category": "Premium Bandai", "release": "November 2026", "official": "https://en.onepiece-cardgame.com/products/"}, {"code": "PCC-LA2-SH", "name": "Live Action Edition vol.2 – Straw Hat Crew", "category": "Premium Bandai", "release": "November 2026", "official": "https://en.onepiece-cardgame.com/products/"}, {"code": "PCC-BS7", "name": "Premium Card Collection – Best Selection vol.7", "category": "Premium Bandai", "release": "Termin offen", "official": "https://en.onepiece-cardgame.com/products/"}, {"code": "MAT-V6", "name": "Official Playmat Limited Edition vol.6", "category": "Zubehör", "release": "Termin offen", "official": "https://en.onepiece-cardgame.com/products/"}];
-const shops = [{"id": 1, "name": "Cardmarket", "country": "EU", "url": "https://www.cardmarket.com"}, {"id": 2, "name": "CardTrader", "country": "Italien", "url": "https://www.cardtrader.com"}, {"id": 3, "name": "Cardbuddys", "country": "Deutschland", "url": "https://cardbuddys.de"}, {"id": 4, "name": "Lootcave", "country": "Deutschland", "url": "https://lootcave.de"}, {"id": 5, "name": "Cardframes", "country": "Deutschland", "url": "https://cardframes.de"}, {"id": 6, "name": "Collect-it", "country": "Deutschland", "url": "https://collect-it.de"}, {"id": 7, "name": "Comic Planet", "country": "Deutschland", "url": "https://comicplanet.de"}, {"id": 8, "name": "Yonko TCG", "country": "Deutschland", "url": "https://yonkotcg.de"}, {"id": 9, "name": "Zuris Shop", "country": "Deutschland", "url": "https://zuris-shop.de"}, {"id": 10, "name": "Card Corner", "country": "Deutschland", "url": "https://cardcorner.de"}, {"id": 11, "name": "Gate to the Games", "country": "Deutschland", "url": "https://www.gate-to-the-games.de"}, {"id": 12, "name": "Trader-Online", "country": "Deutschland", "url": "https://www.trader-online.de"}, {"id": 13, "name": "JK Entertainment", "country": "Deutschland", "url": "https://www.jk-entertainment.de"}, {"id": 14, "name": "FantasyWelt", "country": "Deutschland", "url": "https://www.fantasywelt.de"}, {"id": 15, "name": "BB-Spiele", "country": "Deutschland", "url": "https://www.bb-spiele.de"}, {"id": 16, "name": "Spiele-Offensive", "country": "Deutschland", "url": "https://www.spiele-offensive.de"}, {"id": 17, "name": "TCG-Corner", "country": "Niederlande", "url": "https://tcg-corner.com"}, {"id": 18, "name": "TCGCave", "country": "Niederlande", "url": "https://tcgcave.com"}, {"id": 19, "name": "Rapp Collect", "country": "Niederlande", "url": "https://rappcollect.com"}, {"id": 20, "name": "ShinyVerse", "country": "Niederlande", "url": "https://shinyverse.eu"}, {"id": 21, "name": "Pikamon", "country": "Niederlande", "url": "https://pikamon.eu"}, {"id": 22, "name": "PlayPeak", "country": "Niederlande", "url": "https://playpeak.eu"}, {"id": 23, "name": "Parkage", "country": "Frankreich", "url": "https://parkage.com"}, {"id": 24, "name": "Mana Noir", "country": "Frankreich", "url": "https://mananoir.com"}, {"id": 25, "name": "Poké Corner", "country": "Frankreich", "url": "https://pokecorner.fr"}, {"id": 26, "name": "DracauGames", "country": "Frankreich", "url": "https://dracaugames.com"}, {"id": 27, "name": "Ludifolie", "country": "Frankreich", "url": "https://www.ludifolie.com"}, {"id": 28, "name": "UltraJeux", "country": "Frankreich", "url": "https://www.ultrajeux.com"}, {"id": 29, "name": "Master of Games", "country": "Spanien", "url": "https://masterofgames.es"}, {"id": 30, "name": "Cardzone", "country": "Spanien", "url": "https://cardzone.es"}, {"id": 31, "name": "Metamorph Center", "country": "Spanien", "url": "https://metamorphcenter.com"}, {"id": 32, "name": "Arcotcg", "country": "Spanien", "url": "https://arcotcg.com"}, {"id": 33, "name": "Dungeon Marvels", "country": "Spanien", "url": "https://dungeonmarvels.com"}, {"id": 34, "name": "GoblinTrader", "country": "Spanien", "url": "https://www.goblintrader.es"}, {"id": 35, "name": "Magic Store", "country": "Italien", "url": "https://magicstore.it"}, {"id": 36, "name": "Fantasia Store", "country": "Italien", "url": "https://fantasiastore.it"}, {"id": 37, "name": "Games Academy", "country": "Italien", "url": "https://www.gamesacademy.it"}, {"id": 38, "name": "CardGameClub", "country": "Italien", "url": "https://cardgameclub.it"}, {"id": 39, "name": "Chaos Cards", "country": "UK", "url": "https://www.chaoscards.co.uk"}, {"id": 40, "name": "Magic Madhouse", "country": "UK", "url": "https://magicmadhouse.co.uk"}, {"id": 41, "name": "Total Cards", "country": "UK", "url": "https://totalcards.net"}, {"id": 42, "name": "Zatu Games", "country": "UK", "url": "https://www.board-game.co.uk"}, {"id": 43, "name": "Unicorn Cards", "country": "UK", "url": "https://www.unicorncards.co.uk"}, {"id": 44, "name": "The Brotherhood Games", "country": "UK", "url": "https://thebrotherhoodgames.co.uk"}, {"id": 45, "name": "Gathering Games", "country": "UK", "url": "https://www.gatheringgames.co.uk"}, {"id": 46, "name": "Big Orbit Cards", "country": "UK", "url": "https://www.bigorbitcards.co.uk"}, {"id": 47, "name": "Japan2UK", "country": "UK", "url": "https://japan2uk.com"}, {"id": 48, "name": "EuroTCG", "country": "Polen", "url": "https://www.eurotcg.com"}, {"id": 49, "name": "Mepel", "country": "Polen", "url": "https://www.mepel.pl"}, {"id": 50, "name": "Rebel", "country": "Polen", "url": "https://www.rebel.pl"}];
-const defaultAlerts = [
- {type:"new",label:"Neues Produkt",product:"One Piece TCG – neues Produkt (Beispiel)",shop:"Noch keinem Händler zugeordnet",status:"Neu entdeckt",price:"—",release:"—",link:"#"},
- {type:"pre",label:"Vorbestellung",product:"Booster Display – Vorbestellung (Beispiel)",shop:"Beispiel-Shop",status:"Vorbestellung geöffnet",price:"99,99 €",release:"Noch offen",link:"#"},
- {type:"stock",label:"Restock",product:"Starter Deck – Restock (Beispiel)",shop:"Beispiel-Shop",status:"Sofort verfügbar",price:"14,99 €",release:"Veröffentlicht",link:"#"}
-];
-let alerts = JSON.parse(localStorage.getItem("opHunterAlerts") || "null") || defaultAlerts;
+const fallbackProducts=[{"code": "OP-01", "name": "ROMANCE DAWN", "category": "Booster", "release": "02.12.2022", "official": "https://en.onepiece-cardgame.com/products/op01.html"}, {"code": "OP-02", "name": "PARAMOUNT WAR", "category": "Booster", "release": "10.03.2023", "official": "https://en.onepiece-cardgame.com/products/op02.html"}, {"code": "OP-03", "name": "PILLARS OF STRENGTH", "category": "Booster", "release": "30.06.2023", "official": "https://en.onepiece-cardgame.com/products/op03.html"}, {"code": "OP-04", "name": "KINGDOMS OF INTRIGUE", "category": "Booster", "release": "22.09.2023", "official": "https://en.onepiece-cardgame.com/products/op04.html"}, {"code": "OP-05", "name": "AWAKENING OF THE NEW ERA", "category": "Booster", "release": "08.12.2023", "official": "https://en.onepiece-cardgame.com/products/op05.html"}, {"code": "OP-06", "name": "WINGS OF THE CAPTAIN", "category": "Booster", "release": "15.03.2024", "official": "https://en.onepiece-cardgame.com/products/op06.html"}, {"code": "OP-07", "name": "500 YEARS IN THE FUTURE", "category": "Booster", "release": "28.06.2024", "official": "https://en.onepiece-cardgame.com/products/op07.html"}, {"code": "OP-08", "name": "TWO LEGENDS", "category": "Booster", "release": "13.09.2024", "official": "https://en.onepiece-cardgame.com/products/op08.html"}, {"code": "OP-09", "name": "EMPERORS IN THE NEW WORLD", "category": "Booster", "release": "13.12.2024", "official": "https://en.onepiece-cardgame.com/products/op09.html"}, {"code": "OP-10", "name": "ROYAL BLOOD", "category": "Booster", "release": "21.03.2025", "official": "https://en.onepiece-cardgame.com/products/op10.html"}, {"code": "OP-11", "name": "A FIST OF DIVINE SPEED", "category": "Booster", "release": "06.06.2025", "official": "https://en.onepiece-cardgame.com/products/op11.html"}, {"code": "OP-12", "name": "LEGACY OF THE MASTER", "category": "Booster", "release": "22.08.2025", "official": "https://en.onepiece-cardgame.com/products/op12.html"}, {"code": "OP-13", "name": "CARRYING ON HIS WILL", "category": "Booster", "release": "07.11.2025", "official": "https://en.onepiece-cardgame.com/products/op13.html"}, {"code": "OP-14/EB-04", "name": "THE AZURE SEA'S SEVEN", "category": "Booster", "release": "16.01.2026", "official": "https://en.onepiece-cardgame.com/products/"}, {"code": "OP-15/EB-04", "name": "ADVENTURE ON KAMI'S ISLAND", "category": "Booster", "release": "17.04.2026", "official": "https://en.onepiece-cardgame.com/products/"}, {"code": "OP-16", "name": "THE TIME OF BATTLE", "category": "Booster", "release": "31.07.2026", "official": "https://en.onepiece-cardgame.com/products/op16.html"}, {"code": "OP-17", "name": "THE WORLD'S STRONGEST WARRIORS", "category": "Booster", "release": "28.08.2026", "official": "https://en.onepiece-cardgame.com/products/op17.html"}, {"code": "EB-01", "name": "MEMORIAL COLLECTION", "category": "Extra Booster", "release": "03.05.2024", "official": "https://en.onepiece-cardgame.com/products/eb01.html"}, {"code": "EB-02", "name": "ANIME 25TH COLLECTION", "category": "Extra Booster", "release": "09.05.2025", "official": "https://en.onepiece-cardgame.com/products/eb02.html"}, {"code": "EB-03", "name": "ONE PIECE HEROINES EDITION", "category": "Extra Booster", "release": "20.02.2026", "official": "https://en.onepiece-cardgame.com/products/eb03.html"}, {"code": "EB-05", "name": "ONE PIECE HEROINES EDITION vol.2", "category": "Extra Booster", "release": "30.10.2026", "official": "https://en.onepiece-cardgame.com/products/eb05.html"}, {"code": "PRB-01", "name": "ONE PIECE CARD THE BEST", "category": "Premium Booster", "release": "08.11.2024", "official": "https://en.onepiece-cardgame.com/products/"}, {"code": "PRB-02", "name": "ONE PIECE CARD THE BEST vol.2", "category": "Premium Booster", "release": "03.10.2025", "official": "https://en.onepiece-cardgame.com/products/"}, {"code": "ST-01", "name": "Straw Hat Crew", "category": "Starter Deck", "release": "02.12.2022", "official": "https://en.onepiece-cardgame.com/products/"}, {"code": "ST-02", "name": "Worst Generation", "category": "Starter Deck", "release": "02.12.2022", "official": "https://en.onepiece-cardgame.com/products/"}, {"code": "ST-03", "name": "The Seven Warlords of the Sea", "category": "Starter Deck", "release": "02.12.2022", "official": "https://en.onepiece-cardgame.com/products/"}, {"code": "ST-04", "name": "Animal Kingdom Pirates", "category": "Starter Deck", "release": "02.12.2022", "official": "https://en.onepiece-cardgame.com/products/"}, {"code": "ST-05", "name": "ONE PIECE FILM edition", "category": "Starter Deck", "release": "03.02.2023", "official": "https://en.onepiece-cardgame.com/products/"}, {"code": "ST-06", "name": "Absolute Justice", "category": "Starter Deck", "release": "10.03.2023", "official": "https://en.onepiece-cardgame.com/products/"}, {"code": "ST-07", "name": "Big Mom Pirates", "category": "Starter Deck", "release": "21.04.2023", "official": "https://en.onepiece-cardgame.com/products/"}, {"code": "ST-08", "name": "Monkey.D.Luffy", "category": "Starter Deck", "release": "11.08.2023", "official": "https://en.onepiece-cardgame.com/products/"}, {"code": "ST-09", "name": "Yamato", "category": "Starter Deck", "release": "11.08.2023", "official": "https://en.onepiece-cardgame.com/products/"}, {"code": "ST-10", "name": "The Three Captains", "category": "Ultimate Deck", "release": "10.11.2023", "official": "https://en.onepiece-cardgame.com/products/"}, {"code": "ST-11", "name": "Uta", "category": "Starter Deck", "release": "02.02.2024", "official": "https://en.onepiece-cardgame.com/products/"}, {"code": "ST-12", "name": "Zoro & Sanji", "category": "Starter Deck", "release": "15.03.2024", "official": "https://en.onepiece-cardgame.com/products/"}, {"code": "ST-13", "name": "The Three Brothers", "category": "Ultimate Deck", "release": "19.04.2024", "official": "https://en.onepiece-cardgame.com/products/"}, {"code": "ST-14", "name": "3D2Y", "category": "Starter Deck", "release": "16.08.2024", "official": "https://en.onepiece-cardgame.com/products/"}, {"code": "ST-15", "name": "Red Edward.Newgate", "category": "Starter Deck", "release": "25.10.2024", "official": "https://en.onepiece-cardgame.com/products/"}, {"code": "ST-16", "name": "Green Uta", "category": "Starter Deck", "release": "25.10.2024", "official": "https://en.onepiece-cardgame.com/products/"}, {"code": "ST-17", "name": "Blue Donquixote Doflamingo", "category": "Starter Deck", "release": "25.10.2024", "official": "https://en.onepiece-cardgame.com/products/"}, {"code": "ST-18", "name": "Purple Monkey.D.Luffy", "category": "Starter Deck", "release": "25.10.2024", "official": "https://en.onepiece-cardgame.com/products/"}, {"code": "ST-19", "name": "Black Smoker", "category": "Starter Deck", "release": "25.10.2024", "official": "https://en.onepiece-cardgame.com/products/"}, {"code": "ST-20", "name": "Yellow Charlotte Katakuri", "category": "Starter Deck", "release": "25.10.2024", "official": "https://en.onepiece-cardgame.com/products/"}, {"code": "ST-21", "name": "GEAR5", "category": "Starter Deck", "release": "21.03.2025", "official": "https://en.onepiece-cardgame.com/products/"}, {"code": "ST-22", "name": "Ace & Newgate", "category": "Starter Deck", "release": "28.03.2025", "official": "https://en.onepiece-cardgame.com/products/"}, {"code": "ST-23", "name": "Red Shanks", "category": "Starter Deck", "release": "06.06.2025", "official": "https://en.onepiece-cardgame.com/products/"}, {"code": "ST-24", "name": "Green Jewelry Bonney", "category": "Starter Deck", "release": "06.06.2025", "official": "https://en.onepiece-cardgame.com/products/"}, {"code": "ST-25", "name": "Blue Buggy", "category": "Starter Deck", "release": "06.06.2025", "official": "https://en.onepiece-cardgame.com/products/"}, {"code": "ST-26", "name": "Purple/Black Monkey.D.Luffy", "category": "Starter Deck", "release": "06.06.2025", "official": "https://en.onepiece-cardgame.com/products/"}, {"code": "ST-27", "name": "Black Marshall.D.Teach", "category": "Starter Deck", "release": "06.06.2025", "official": "https://en.onepiece-cardgame.com/products/"}, {"code": "ST-28", "name": "Yellow/Green Yamato", "category": "Starter Deck", "release": "06.06.2025", "official": "https://en.onepiece-cardgame.com/products/"}, {"code": "ST-29", "name": "Egghead", "category": "Starter Deck", "release": "16.01.2026", "official": "https://en.onepiece-cardgame.com/products/"}, {"code": "ST-30", "name": "Luffy & Ace", "category": "Starter Deck EX", "release": "17.04.2026", "official": "https://en.onepiece-cardgame.com/products/st30.html"}, {"code": "ST-31", "name": "Red Monkey.D.Luffy", "category": "Starter Deck", "release": "31.07.2026", "official": "https://en.onepiece-cardgame.com/products/st31.html"}, {"code": "ST-32", "name": "Green Roronoa Zoro", "category": "Starter Deck", "release": "31.07.2026", "official": "https://en.onepiece-cardgame.com/products/st32.html"}, {"code": "ST-33", "name": "Blue Kuzan", "category": "Starter Deck", "release": "31.07.2026", "official": "https://en.onepiece-cardgame.com/products/st33.html"}, {"code": "ST-34", "name": "Purple Charlotte Katakuri", "category": "Starter Deck", "release": "31.07.2026", "official": "https://en.onepiece-cardgame.com/products/st34.html"}, {"code": "ST-35", "name": "Red/Black Sabo", "category": "Starter Deck", "release": "31.07.2026", "official": "https://en.onepiece-cardgame.com/products/st35.html"}, {"code": "ST-36", "name": "Yellow Eustass “Captain” Kid", "category": "Starter Deck", "release": "31.07.2026", "official": "https://en.onepiece-cardgame.com/products/st36.html"}, {"code": "DP-12", "name": "Double Pack Set Vol.12", "category": "Double Pack", "release": "28.08.2026", "official": "https://en.onepiece-cardgame.com/products/"}, {"code": "PCC-BS6", "name": "Premium Card Collection – Best Selection Vol.6", "category": "Premium Bandai", "release": "August 2026", "official": "https://en.onepiece-cardgame.com/products/"}, {"code": "3RD-ANNIV", "name": "English Version 3rd Anniversary Set", "category": "Anniversary", "release": "August 2026", "official": "https://en.onepiece-cardgame.com/products/"}, {"code": "HEROINES-SET", "name": "ONE PIECE Heroines Special Set", "category": "Premium Bandai", "release": "September 2026", "official": "https://en.onepiece-cardgame.com/products/"}, {"code": "PCC-LA2-BW", "name": "Live Action Edition vol.2 – Baroque Works", "category": "Premium Bandai", "release": "November 2026", "official": "https://en.onepiece-cardgame.com/products/"}, {"code": "PCC-LA2-SH", "name": "Live Action Edition vol.2 – Straw Hat Crew", "category": "Premium Bandai", "release": "November 2026", "official": "https://en.onepiece-cardgame.com/products/"}, {"code": "PCC-BS7", "name": "Premium Card Collection – Best Selection vol.7", "category": "Premium Bandai", "release": "Termin offen", "official": "https://en.onepiece-cardgame.com/products/"}, {"code": "MAT-V6", "name": "Official Playmat Limited Edition vol.6", "category": "Zubehör", "release": "Termin offen", "official": "https://en.onepiece-cardgame.com/products/"}];
+const fallbackShops=[{"id": 1, "name": "Cardmarket", "country": "EU", "url": "https://www.cardmarket.com"}, {"id": 2, "name": "CardTrader", "country": "Italien", "url": "https://www.cardtrader.com"}, {"id": 3, "name": "Cardbuddys", "country": "Deutschland", "url": "https://cardbuddys.de"}, {"id": 4, "name": "Lootcave", "country": "Deutschland", "url": "https://lootcave.de"}, {"id": 5, "name": "Cardframes", "country": "Deutschland", "url": "https://cardframes.de"}, {"id": 6, "name": "Collect-it", "country": "Deutschland", "url": "https://collect-it.de"}, {"id": 7, "name": "Comic Planet", "country": "Deutschland", "url": "https://comicplanet.de"}, {"id": 8, "name": "Yonko TCG", "country": "Deutschland", "url": "https://yonkotcg.de"}, {"id": 9, "name": "Zuris Shop", "country": "Deutschland", "url": "https://zuris-shop.de"}, {"id": 10, "name": "Card Corner", "country": "Deutschland", "url": "https://cardcorner.de"}, {"id": 11, "name": "Gate to the Games", "country": "Deutschland", "url": "https://www.gate-to-the-games.de"}, {"id": 12, "name": "Trader-Online", "country": "Deutschland", "url": "https://www.trader-online.de"}, {"id": 13, "name": "JK Entertainment", "country": "Deutschland", "url": "https://www.jk-entertainment.de"}, {"id": 14, "name": "FantasyWelt", "country": "Deutschland", "url": "https://www.fantasywelt.de"}, {"id": 15, "name": "BB-Spiele", "country": "Deutschland", "url": "https://www.bb-spiele.de"}, {"id": 16, "name": "Spiele-Offensive", "country": "Deutschland", "url": "https://www.spiele-offensive.de"}, {"id": 17, "name": "TCG-Corner", "country": "Niederlande", "url": "https://tcg-corner.com"}, {"id": 18, "name": "TCGCave", "country": "Niederlande", "url": "https://tcgcave.com"}, {"id": 19, "name": "Rapp Collect", "country": "Niederlande", "url": "https://rappcollect.com"}, {"id": 20, "name": "ShinyVerse", "country": "Niederlande", "url": "https://shinyverse.eu"}, {"id": 21, "name": "Pikamon", "country": "Niederlande", "url": "https://pikamon.eu"}, {"id": 22, "name": "PlayPeak", "country": "Niederlande", "url": "https://playpeak.eu"}, {"id": 23, "name": "Parkage", "country": "Frankreich", "url": "https://parkage.com"}, {"id": 24, "name": "Mana Noir", "country": "Frankreich", "url": "https://mananoir.com"}, {"id": 25, "name": "Poké Corner", "country": "Frankreich", "url": "https://pokecorner.fr"}, {"id": 26, "name": "DracauGames", "country": "Frankreich", "url": "https://dracaugames.com"}, {"id": 27, "name": "Ludifolie", "country": "Frankreich", "url": "https://www.ludifolie.com"}, {"id": 28, "name": "UltraJeux", "country": "Frankreich", "url": "https://www.ultrajeux.com"}, {"id": 29, "name": "Master of Games", "country": "Spanien", "url": "https://masterofgames.es"}, {"id": 30, "name": "Cardzone", "country": "Spanien", "url": "https://cardzone.es"}, {"id": 31, "name": "Metamorph Center", "country": "Spanien", "url": "https://metamorphcenter.com"}, {"id": 32, "name": "Arcotcg", "country": "Spanien", "url": "https://arcotcg.com"}, {"id": 33, "name": "Dungeon Marvels", "country": "Spanien", "url": "https://dungeonmarvels.com"}, {"id": 34, "name": "GoblinTrader", "country": "Spanien", "url": "https://www.goblintrader.es"}, {"id": 35, "name": "Magic Store", "country": "Italien", "url": "https://magicstore.it"}, {"id": 36, "name": "Fantasia Store", "country": "Italien", "url": "https://fantasiastore.it"}, {"id": 37, "name": "Games Academy", "country": "Italien", "url": "https://www.gamesacademy.it"}, {"id": 38, "name": "CardGameClub", "country": "Italien", "url": "https://cardgameclub.it"}, {"id": 39, "name": "Chaos Cards", "country": "UK", "url": "https://www.chaoscards.co.uk"}, {"id": 40, "name": "Magic Madhouse", "country": "UK", "url": "https://magicmadhouse.co.uk"}, {"id": 41, "name": "Total Cards", "country": "UK", "url": "https://totalcards.net"}, {"id": 42, "name": "Zatu Games", "country": "UK", "url": "https://www.board-game.co.uk"}, {"id": 43, "name": "Unicorn Cards", "country": "UK", "url": "https://www.unicorncards.co.uk"}, {"id": 44, "name": "The Brotherhood Games", "country": "UK", "url": "https://thebrotherhoodgames.co.uk"}, {"id": 45, "name": "Gathering Games", "country": "UK", "url": "https://www.gatheringgames.co.uk"}, {"id": 46, "name": "Big Orbit Cards", "country": "UK", "url": "https://www.bigorbitcards.co.uk"}, {"id": 47, "name": "Japan2UK", "country": "UK", "url": "https://japan2uk.com"}, {"id": 48, "name": "EuroTCG", "country": "Polen", "url": "https://www.eurotcg.com"}, {"id": 49, "name": "Mepel", "country": "Polen", "url": "https://www.mepel.pl"}, {"id": 50, "name": "Rebel", "country": "Polen", "url": "https://www.rebel.pl"}];
+let state={products:[],shops:[],results:{offers:[]},events:{events:[]},history:{products:{}},favorites:new Set(JSON.parse(localStorage.getItem("opHunterFavorites")||"[]")),viewMode:localStorage.getItem("opHunterView")||"table"};
 
-const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-function renderAlerts(){
- const box=document.getElementById("alerts");
- box.innerHTML=alerts.map((a,i)=>`<article class="card alert">
-  <span class="badge ${esc(a.type)}">${esc(a.label)}</span>
-  <h3 contenteditable onblur="editAlert(${i},'product',this.innerText)">${esc(a.product)}</h3>
-  <div class="meta">
-   <span>Händler</span><span contenteditable onblur="editAlert(${i},'shop',this.innerText)">${esc(a.shop)}</span>
-   <span>Status</span><span contenteditable onblur="editAlert(${i},'status',this.innerText)">${esc(a.status)}</span>
-   <span>Preis</span><span contenteditable onblur="editAlert(${i},'price',this.innerText)">${esc(a.price)}</span>
-   <span>Release</span><span contenteditable onblur="editAlert(${i},'release',this.innerText)">${esc(a.release)}</span>
-   <span>Link</span><span><a href="${esc(a.link)}" target="_blank" rel="noopener">Produkt öffnen ↗</a></span>
-   <span>Entdeckt</span><span>${new Date().toLocaleString("de-DE")}</span>
-  </div>
- </article>`).join("");
- document.getElementById("alertCount").textContent=alerts.length;
-}
-window.editAlert=(i,k,v)=>{alerts[i][k]=v;localStorage.setItem("opHunterAlerts",JSON.stringify(alerts));};
+const $=id=>document.getElementById(id);
+const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const norm=v=>String(v||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g," ").trim();
+const parsePrice=v=>{const m=String(v||"").match(/\d+(?:[.,]\d+)?/);return m?Number(m[0].replace(",",".")):null};
+const fmtDate=v=>{if(!v)return"—";const d=new Date(v);return isNaN(d)?v:d.toLocaleString("de-DE")};
+const productOffers=code=>state.results.offers.filter(o=>o.product_code===code&&o.available===true);
+const bestOffer=code=>productOffers(code).filter(o=>o.price_verified&&parsePrice(o.price)!=null).sort((a,b)=>parsePrice(a.price)-parsePrice(b.price))[0]||null;
+const isPreorder=code=>productOffers(code).some(o=>o.order_type==="Vorbestellung");
+const showToast=msg=>{$("toast").textContent=msg;$("toast").classList.add("show");setTimeout(()=>$("toast").classList.remove("show"),2200)};
 
-function populateCountries(){
- const sel=document.getElementById("country");
- [...new Set(shops.map(s=>s.country))].sort().forEach(c=>sel.insertAdjacentHTML("beforeend",`<option>${esc(c)}</option>`));
+async function fetchJson(path,fallback){
+ try{const r=await fetch(path+"?ts="+Date.now(),{cache:"no-store"});if(!r.ok)throw 0;return await r.json()}catch(e){return fallback}
 }
-function renderShops(){
- const q=document.getElementById("search").value.toLowerCase();
- const c=document.getElementById("country").value;
- const filtered=shops.filter(s=>(!c||s.country===c)&&(`${s.name} ${s.country}`.toLowerCase().includes(q)));
- document.getElementById("shopList").innerHTML=filtered.map(s=>`<div class="shop">
-   <div class="status-dot" title="Im Radar"></div>
-   <div class="shop-info"><div class="shop-name">${esc(s.name)}</div><div class="shop-country">${esc(s.country)}</div></div>
-   <a class="open" href="${esc(s.url)}" target="_blank" rel="noopener">Öffnen ↗</a>
- </div>`).join("");
- document.getElementById("resultCount").textContent=`${filtered.length} von ${shops.length} Shops`;
+async function loadData(){
+ const [products,shops,results,events,history]=await Promise.all([
+  fetchJson("data/products.json",fallbackProducts),fetchJson("data/shops.json",fallbackShops),
+  fetchJson("data/results.json",{offers:[]}),fetchJson("data/events.json",{events:[]}),
+  fetchJson("data/price_history.json",{products:{}})
+ ]);
+ state.products=products;state.shops=shops;state.results=results;state.events=events;state.history=history;
+ renderAll();
 }
-document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>{
- document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));t.classList.add("active");
- ["alerts","products","shops","settings"].forEach(v=>document.getElementById(v+"View").hidden=t.dataset.view!==v);
-});
-document.getElementById("search").oninput=e=>{
- const productsActive=document.querySelector('.tab.active')?.dataset.view==="products";
- if(productsActive){document.getElementById("productSearch").value=e.target.value;renderProducts();}
- else renderShops();
-};
-document.getElementById("country").onchange=renderShops;
-document.getElementById("scanBtn").onclick=()=>{
- const now=new Date().toLocaleString("de-DE");
- localStorage.setItem("opHunterLastCheck",now);document.getElementById("lastCheck").textContent=now;
- alert("Prüfung protokolliert. Für echte Web-Scans ist ein Server/Automationsdienst erforderlich.");
-};
-document.getElementById("exportBtn").onclick=()=>{
- const blob=new Blob([JSON.stringify({shops,alerts},null,2)],{type:"application/json"});
- const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="op-hunter-daten.json";a.click();URL.revokeObjectURL(a.href);
-};
-
-const retailerSearches = [
- {name:"Cardmarket", url:q=>"https://www.cardmarket.com/en/OnePiece/Products/Search?searchString="+encodeURIComponent(q)},
- {name:"Gate to the Games", url:q=>"https://www.gate-to-the-games.de/search?sSearch="+encodeURIComponent(q)},
- {name:"Trader Online", url:q=>"https://trader-online.de/search?sSearch="+encodeURIComponent(q)},
- {name:"FantasyWelt", url:q=>"https://www.fantasywelt.de/search?sSearch="+encodeURIComponent(q)},
- {name:"Smyths Toys", url:q=>"https://www.smythstoys.com/de/de-de/search/?text="+encodeURIComponent(q)},
- {name:"Müller", url:q=>"https://www.mueller.de/suche/?q="+encodeURIComponent(q)},
- {name:"MediaMarkt", url:q=>"https://www.mediamarkt.de/de/search.html?query="+encodeURIComponent(q)},
- {name:"Saturn", url:q=>"https://www.saturn.de/de/search.html?query="+encodeURIComponent(q)},
- {name:"Thalia", url:q=>"https://www.thalia.de/suche?sq="+encodeURIComponent(q)},
- {name:"Amazon DE", url:q=>"https://www.amazon.de/s?k="+encodeURIComponent(q)},
- {name:"eBay DE", url:q=>"https://www.ebay.de/sch/i.html?_nkw="+encodeURIComponent(q)},
- {name:"Cardmarket-Angebote", url:q=>"https://www.cardmarket.com/en/OnePiece/Products/Search?searchString="+encodeURIComponent(q)}
-];
-function isUpcoming(p){
- const parts=p.release.match(/^(\d{2})\.(\d{2})\.(\d{4})$/);
- if(!parts) return /2026|2027|offen/i.test(p.release);
- const d=new Date(+parts[3],+parts[2]-1,+parts[1],23,59,59);
- return d >= new Date();
+function releaseDate(p){
+ const v=p.release||"";let m=v.match(/^(\d{2})\.(\d{2})\.(\d{4})$/);if(m)return new Date(+m[3],+m[2]-1,+m[1]);
+ m=v.match(/^(January|February|March|April|May|June|July|August|September|October|November|December)\s+(\d{1,2}),\s+(20\d{2})$/i);
+ if(m)return new Date(v);return null
 }
-function normalizeSearch(v){
- return String(v||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"")
-   .replace(/[^a-z0-9]+/g," ").trim();
+function productStatus(p){
+ const offers=productOffers(p.code);if(offers.some(o=>o.order_type==="Bestellung"))return["stock","Auf Lager"];
+ if(offers.some(o=>o.order_type==="Vorbestellung"))return["pre","Vorbestellbar"];
+ return["none","Kein bestätigtes Angebot"]
 }
-function productMatches(p,q){
- if(!q)return true;
- const hay=normalizeSearch(`${p.code} ${p.name} ${p.category}`);
- const terms=normalizeSearch(q).split(/\s+/).filter(Boolean);
- return terms.every(t=>hay.includes(t));
+function toggleFavorite(code){
+ state.favorites.has(code)?state.favorites.delete(code):state.favorites.add(code);
+ localStorage.setItem("opHunterFavorites",JSON.stringify([...state.favorites]));renderAll();showToast(state.favorites.has(code)?"Zur Watchlist hinzugefügt":"Aus Watchlist entfernt")
+}
+function renderKpis(){
+ const offers=state.results.offers||[],pre=offers.filter(o=>o.order_type==="Vorbestellung"),verified=offers.filter(o=>o.price_verified);
+ const unique=new Set(offers.map(o=>o.product_code)).size;
+ const newToday=(state.events.events||[]).filter(e=>e.detected_at&&Date.now()-new Date(e.detected_at)<86400000&&e.type==="new_offer").length;
+ const values=[
+  ["Bestätigte Angebote",offers.length,"direkte Produktseiten"],
+  ["Verfügbare Produkte",unique,"mit mindestens einem Treffer"],
+  ["Vorbestellungen",pre.length,"bestätigte Preorders"],
+  ["Neue Funde heute",newToday,"seit 24 Stunden"],
+  ["Verifizierte Preise",verified.length,"aus Produktdaten"],
+  ["Geprüfte Shops",state.results.checked_shops||state.shops.length,`von ${state.shops.length} im Radar`]
+ ];
+ $("kpis").innerHTML=values.map(x=>`<div class="kpi"><div class="label">${x[0]}</div><div class="value">${x[1]}</div><div class="sub">${x[2]}</div></div>`).join("");
+ $("navProducts").textContent=state.products.length;$("navOffers").textContent=offers.length;$("navPreorders").textContent=pre.length;$("navWatchlist").textContent=state.favorites.size;$("navEvents").textContent=(state.events.events||[]).length;
+ $("topScan").textContent=state.results.generated_at?`Letzter Scan: ${fmtDate(state.results.generated_at)}`:"Noch kein Scan";
+}
+function offerHtml(o){
+ const p=state.products.find(x=>x.code===o.product_code)||{name:o.product_name,code:o.product_code};
+ return `<a class="offer" href="${esc(o.url)}" target="_blank" rel="noopener"><div><strong>${esc(p.code)} · ${esc(p.name)}</strong><small>${esc(o.shop)} · ${esc(o.country||"")}</small></div><span class="badge ${o.order_type==="Vorbestellung"?"pre":"stock"}">${esc(o.order_type)}</span><span class="price">${o.price_verified&&o.price?esc(o.price):"Preis prüfen"}</span><b>Öffnen ↗</b></a>`
+}
+function renderOverview(){
+ const offers=[...(state.results.offers||[])].sort((a,b)=>(parsePrice(a.price)??999999)-(parsePrice(b.price)??999999));
+ $("overviewOffers").innerHTML=offers.slice(0,6).map(offerHtml).join("")||empty("Noch keine bestätigten Angebote","Starte einen vollständigen Scan.");
+ $("overviewActivity").innerHTML=eventHtml((state.events.events||[]).slice(0,8));
+ const checks=state.results.checks_attempted||0,possible=(state.results.checked_shops||state.shops.length)*(state.results.products_checked||state.products.length);
+ $("coverage").innerHTML=[
+  ["Produkte geprüft",state.results.products_checked||state.products.length],
+  ["Shops geprüft",state.results.checked_shops||state.shops.length],
+  ["Prüfungen",checks||possible],
+  ["Laufzeit",state.results.duration_seconds?Math.round(state.results.duration_seconds/60)+" Min.":"—"]
+ ].map(x=>`<div class="status-item"><b>${x[1]}</b><span>${x[0]}</span></div>`).join("");
+ $("coverageTime").textContent=state.results.generated_at?fmtDate(state.results.generated_at):"Noch kein Scan";
+}
+function empty(title,text){return `<div class="empty"><b>${title}</b>${text}</div>`}
+function eventHtml(events){
+ if(!events.length)return empty("Noch keine Aktivitäten","Nach dem nächsten Scan werden neue Angebote und Preisänderungen protokolliert.");
+ return events.map(e=>`<div class="activity ${esc(e.type)}"><span class="event-dot"></span><div><b>${esc(e.title||"Aktivität")} · ${esc(e.product_code||"")}</b><p>${esc(e.product_name||"")}${e.shop?" · "+esc(e.shop):""}${e.old_price?" · "+esc(e.old_price)+" → ":""}${e.price?esc(e.price):""}</p></div><time>${e.detected_at?new Date(e.detected_at).toLocaleDateString("de-DE"):""}</time></div>`).join("")
+}
+function productRow(p){
+ const [cls,label]=productStatus(p),offers=productOffers(p.code),best=bestOffer(p.code),d=releaseDate(p);
+ return `<tr onclick="openProduct('${esc(p.code)}')"><td><button class="star ${state.favorites.has(p.code)?"on":""}" onclick="event.stopPropagation();toggleFavorite('${esc(p.code)}')">★</button></td><td><div class="product-cell"><div class="thumb">${esc(p.code)}</div><div><b>${esc(p.name)}</b><small>${esc(p.category)}</small></div></div></td><td><span class="badge ${cls}">${label}</span></td><td>${esc(p.release||"—")}</td><td class="price">${best?esc(best.price):"—"}</td><td>${offers.length}</td><td>${offers[0]?esc(offers[0].shop):"—"}</td><td><button class="btn">Details</button></td></tr>`
+}
+function filteredProducts(){
+ const q=norm($("productSearch").value),status=$("statusFilter").value,cat=$("categoryFilter").value,rel=$("releaseFilter").value,max=Number($("maxPrice").value||0);
+ let arr=state.products.filter(p=>{
+  if(q&&!norm(`${p.code} ${p.name} ${p.category}`).includes(q))return false;
+  const offers=productOffers(p.code),pre=offers.some(o=>o.order_type==="Vorbestellung"),stock=offers.some(o=>o.order_type==="Bestellung");
+  if(status==="stock"&&!stock)return false;if(status==="preorder"&&!pre)return false;if(status==="none"&&offers.length)return false;
+  if(cat&&p.category!==cat)return false;
+  const d=releaseDate(p),days=d?(d-Date.now())/86400000:null;
+  if(rel==="released"&&(!d||days>0))return false;if(rel==="unknown"&&d)return false;
+  if(["30","90","180"].includes(rel)&&(!d||days<0||days>Number(rel)))return false;
+  const best=bestOffer(p.code);if(max&&(!best||parsePrice(best.price)>max))return false;
+  if($("verifiedOnly").classList.contains("active")&&!best)return false;
+  if($("favoritesOnly").classList.contains("active")&&!state.favorites.has(p.code))return false;
+  if($("availableOnly").classList.contains("active")&&!offers.length)return false;
+  return true
+ });
+ const sort=$("sortFilter").value;
+ arr.sort((a,b)=>{
+  if(sort==="name")return a.name.localeCompare(b.name);
+  if(sort==="price")return (parsePrice(bestOffer(a.code)?.price)??999999)-(parsePrice(bestOffer(b.code)?.price)??999999);
+  if(sort==="offers")return productOffers(b.code).length-productOffers(a.code).length;
+  if(sort==="newest"){const ea=(state.events.events||[]).find(e=>e.product_code===a.code)?.detected_at||"";const eb=(state.events.events||[]).find(e=>e.product_code===b.code)?.detected_at||"";return eb.localeCompare(ea)}
+  return (releaseDate(a)?.getTime()??9999999999999)-(releaseDate(b)?.getTime()??9999999999999)
+ });
+ return arr
 }
 function renderProducts(){
- const q=document.getElementById("productSearch").value.trim();
- const cat=document.getElementById("productCategory").value;
- const period=document.getElementById("productPeriod").value;
- const filtered=products.filter(p=>{
-   const c=!cat||p.category===cat;
-   const u=isUpcoming(p);
-   return productMatches(p,q)&&c&&(!period||(period==="upcoming"?u:!u));
- });
- let rows=filtered.map((p)=>{
-   const upcoming=isUpcoming(p);
-   return `<article class="card product-card" onclick="openProduct('${p.code.replaceAll("'","\\'")}')">
-    <div class="product-art"><span class="product-symbol">☠</span><span class="product-code">${esc(p.code)}</span></div>
-    <div class="product-body"><div class="product-bottom">
-      <span class="badge ${upcoming?'pre':'stock'}">${esc(p.category)}</span>
-      <h3>${esc(p.name)}</h3>
-      <div class="product-status-cell">${upcoming?'<span class="future-chip">GEPLANT</span>':'<span class="release">Erschienen</span>'}</div>
-      <span class="release">📅 ${esc(p.release)}</span>
-      <span></span><span></span><span></span><b class="scan-button">Prüfen →</b>
-    </div></div>
-   </article>`;
- });
- if(q){
-   rows.unshift(`<article class="card product-card custom-product-row" onclick='openCustomProduct(${JSON.stringify(q)})'>
-    <div class="product-art"><span class="product-symbol">⌕</span><span class="product-code">LIVE</span></div>
-    <div class="product-body"><div class="product-bottom">
-      <span class="badge price">Freie Suche</span><h3>${esc(q)}</h3>
-      <div class="product-status-cell"><span class="future-chip">50 SHOPS</span></div>
-      <span class="release">Exakte Eingabe prüfen</span>
-      <span></span><span></span><span></span><b class="scan-button">Jetzt prüfen →</b>
-    </div></div>
-   </article>`);
- }
- if(!rows.length) rows.push('<div class="product-empty">Kein Katalogtreffer. Gib einen Produktnamen ein und drücke Enter, um alle 50 Shops direkt zu prüfen.</div>');
- document.getElementById("productGrid").innerHTML=rows.join("");
- document.getElementById("productResultCount").textContent=`${filtered.length} Katalogtreffer`;
+ const arr=filteredProducts();$("productCount").textContent=`${arr.length} von ${state.products.length} Produkten`;
+ $("productTable").innerHTML=arr.length?`<div class="table-wrap"><table><thead><tr><th></th><th>Produkt</th><th>Status</th><th>Release</th><th>Bestpreis</th><th>Angebote</th><th>Händler</th><th></th></tr></thead><tbody>${arr.map(productRow).join("")}</tbody></table></div>`:empty("Keine Produkte gefunden","Passe deine Filter an.");
+ $("productCards").innerHTML=arr.map(p=>{const [cls,label]=productStatus(p),best=bestOffer(p.code);return `<article class="product-card" onclick="openProduct('${esc(p.code)}')"><div class="card-art">${esc(p.code)}<button class="star ${state.favorites.has(p.code)?"on":""}" onclick="event.stopPropagation();toggleFavorite('${esc(p.code)}')">★</button></div><div class="card-body"><span class="badge ${cls}">${label}</span><h3>${esc(p.name)}</h3><div class="card-meta"><span>${esc(p.release||"—")}</span><b>${best?esc(best.price):productOffers(p.code).length+" Angebote"}</b></div></div></article>`}).join("");
+ $("productTable").hidden=state.viewMode!=="table";$("productCards").hidden=state.viewMode!=="cards";
 }
-function populateProductCategories(){
- const sel=document.getElementById("productCategory");
- [...new Set(products.map(p=>p.category))].sort().forEach(c=>sel.insertAdjacentHTML("beforeend",`<option>${esc(c)}</option>`));
+function renderOffers(){
+ const q=norm($("offerSearch").value),country=$("offerCountry").value,type=$("offerType").value,sort=$("offerSort").value;
+ let arr=(state.results.offers||[]).filter(o=>(!q||norm(`${o.product_code} ${o.product_name} ${o.shop}`).includes(q))&&(!country||o.country===country)&&(!type||o.order_type===type));
+ arr.sort((a,b)=>sort==="shop"?a.shop.localeCompare(b.shop):sort==="product"?(a.product_code||"").localeCompare(b.product_code||""):(parsePrice(a.price)??999999)-(parsePrice(b.price)??999999));
+ $("allOffers").innerHTML=arr.map(offerHtml).join("")||empty("Keine Treffer","Für diese Filter gibt es keine bestätigten Angebote.");
+ $("preorderOffers").innerHTML=(state.results.offers||[]).filter(o=>o.order_type==="Vorbestellung").map(offerHtml).join("")||empty("Keine Vorbestellungen","Der letzte Scan hat keine bestätigten Vorbestellungen gefunden.");
 }
-function populateProductSuggestions(){
- const list=document.getElementById("productSuggestions");
- list.innerHTML=products.map(p=>`<option value="${esc(p.code+" "+p.name)}"></option>`).join("");
+function renderCalendar(){
+ const range=$("calendarRange").value,now=new Date();let arr=state.products.map(p=>[p,releaseDate(p)]).filter(x=>x[1]);
+ if(range!=="all")arr=arr.filter(x=>x[1]>=new Date(now.getFullYear(),now.getMonth(),now.getDate())&&x[1]-now<=Number(range)*86400000);
+ arr.sort((a,b)=>a[1]-b[1]);const groups={};
+ arr.forEach(([p,d])=>{const key=d.toLocaleDateString("de-DE",{month:"long",year:"numeric"});(groups[key]??=[]).push([p,d])});
+ $("calendar").innerHTML=Object.entries(groups).map(([month,items])=>`<section class="month"><h3>${month}</h3>${items.map(([p,d])=>`<div class="release-row" onclick="openProduct('${esc(p.code)}')"><b>${d.toLocaleDateString("de-DE",{day:"2-digit",month:"2-digit"})}</b><span class="badge planned">${esc(p.category)}</span><div><b>${esc(p.code)} · ${esc(p.name)}</b></div><span>${productOffers(p.code).length} Angebote</span></div>`).join("")}</section>`).join("")||empty("Keine Releases im Zeitraum","Wähle einen größeren Zeitraum.");
 }
-let cloudResultsCache=null;
-async function loadCloudResults(){
- if(cloudResultsCache)return cloudResultsCache;
- const response=await fetch("data/results.json?ts="+Date.now(),{cache:"no-store"});
- if(!response.ok)throw new Error("Bestandsdatei konnte nicht geladen werden");
- cloudResultsCache=await response.json();
- return cloudResultsCache;
+function renderWatchlist(){
+ const arr=state.products.filter(p=>state.favorites.has(p.code));$("watchlistContent").innerHTML=arr.length?`<div class="table-wrap"><table><thead><tr><th></th><th>Produkt</th><th>Status</th><th>Release</th><th>Bestpreis</th><th>Angebote</th><th>Händler</th><th></th></tr></thead><tbody>${arr.map(productRow).join("")}</tbody></table></div>`:empty("Deine Watchlist ist leer","Markiere Produkte mit dem Stern.");
 }
-function normCloud(v){
- return String(v||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"")
-   .replace(/[^a-z0-9]+/g," ").trim();
+function renderActivity(){
+ const f=$("eventFilter").value,arr=(state.events.events||[]).filter(e=>!f||e.type===f);$("activityFeed").innerHTML=eventHtml(arr)
 }
-function matchingCloudOffers(data,p){
- const code=normCloud(p.code);
- const nameTerms=normCloud(p.name).split(/\s+/).filter(x=>x.length>2);
- return (data.offers||[]).filter(o=>{
-   const hay=normCloud(`${o.product_code||""} ${o.product_name||""} ${o.query||""}`);
-   if(code && hay.includes(code))return true;
-   return nameTerms.length && nameTerms.every(t=>hay.includes(t));
- });
+function renderShops(){
+ const q=norm($("shopSearch").value),country=$("shopCountry").value;
+ const counts={};(state.results.offers||[]).forEach(o=>counts[o.shop]=(counts[o.shop]||0)+1);
+ const arr=state.shops.filter(s=>(!q||norm(`${s.name} ${s.country}`).includes(q))&&(!country||s.country===country));
+ $("shopGrid").innerHTML=arr.map(s=>`<div class="shop-card"><div class="top"><div><b>${esc(s.name)}</b><p>${esc(s.country)}</p></div><span class="badge ${counts[s.name]?"stock":"none"}">${counts[s.name]||0} Treffer</span></div><div class="progress"><span style="width:${Math.min(100,(counts[s.name]||0)*10)}%"></span></div><p><a href="${esc(s.url)}" target="_blank" rel="noopener">Shop öffnen ↗</a></p></div>`).join("")
 }
-async function showAndScanProduct(p){
- document.getElementById("modalCategory").textContent=p.category||"Freie Produktsuche";
- document.getElementById("modalTitle").textContent=p.name;
- document.getElementById("modalCode").textContent=p.code||"SUCHE";
- document.getElementById("modalSet").textContent=p.code||"Nicht angegeben";
- document.getElementById("modalRelease").textContent=p.release||"Nicht angegeben";
- document.getElementById("modalStatus").textContent="Cloud-Daten werden geladen";
- const official=document.getElementById("officialLink");
- official.href=p.official||"https://en.onepiece-cardgame.com/products/";
- official.style.display=p.official?"inline-block":"none";
- document.getElementById("modalShops").innerHTML="";
- document.getElementById("availabilityState").innerHTML='<span class="scan-spinner"></span>Gespeicherte Ergebnisse der automatischen Shopprüfung werden geladen …';
- document.getElementById("productModal").classList.add("open");
- document.getElementById("productModal").setAttribute("aria-hidden","false");
- try{
-   const data=await loadCloudResults();
-   const offers=matchingCloudOffers(data,p).filter(o=>o.available===true);
-   const checked=data.generated_at ? new Date(data.generated_at).toLocaleString("de-DE") : "noch nicht ausgeführt";
-   document.getElementById("modalStatus").textContent=offers.length?`${offers.length} verfügbare Angebote`:"Kein gespeicherter Treffer";
-   document.getElementById("availabilityState").innerHTML=offers.length
-      ?`${offers.length} verfügbare bzw. vorbestellbare Angebote. Letzte Prüfung: <b>${esc(checked)}</b>.`
-      :`Beim letzten Cloud-Scan wurde kein bestätigter Direktlink mit eindeutigem Bestell- oder Vorbestellstatus erkannt. Letzte Prüfung: <b>${esc(checked)}</b>.`;
-   document.getElementById("modalShops").innerHTML=offers.map(o=>`<a class="offer" href="${esc(o.url)}" target="_blank" rel="noopener">
-     <b>${esc(o.shop)}</b><span class="offer-status">${esc(o.order_type)}</span>
-     <span class="offer-price">${esc(o.price_verified && o.price ? o.price : "Preis auf Händlerseite prüfen")}</span><span>Öffnen ↗</span></a>`).join("");
- }catch(err){
-   document.getElementById("modalStatus").textContent="Cloud-Daten nicht verfügbar";
-   document.getElementById("availabilityState").innerHTML="<b>Die Ergebnisdatei ist noch nicht erreichbar.</b><br>Führe im GitHub-Repository unter <code>Actions → OP Hunter Scan & Deploy → Run workflow</code> den ersten Scan aus und lade die Seite danach neu.";
- }
+function renderSystem(){
+ const r=state.results,values=[["Letzter Scan",r.generated_at?fmtDate(r.generated_at):"—","Zeitpunkt"],["Laufzeit",r.duration_seconds?Math.round(r.duration_seconds/60)+" Min.":"—","Gesamtdauer"],["Prüfungen",r.checks_attempted||0,"Produkt × Shop"],["Direktlinks",(r.offers||[]).length,"bestätigte Treffer"],["Preisqualität",r.offers?.length?Math.round((r.verified_prices_count||0)/r.offers.length*100)+"%":"—","verifizierte Preise"],["Shops mit Treffern",r.shops_with_offers||new Set((r.offers||[]).map(o=>o.shop)).size,"von "+state.shops.length]];
+ $("systemKpis").innerHTML=values.map(x=>`<div class="kpi"><div class="label">${x[0]}</div><div class="value">${x[1]}</div><div class="sub">${x[2]}</div></div>`).join("");
+ $("qualityPanel").innerHTML=`<div class="status-bar"><div class="status-item"><b>${r.verified_prices_count||0}</b><span>verifizierte Preise</span></div><div class="status-item"><b>${(r.offers||[]).length-(r.verified_prices_count||0)}</b><span>Preise manuell prüfen</span></div><div class="status-item"><b>${r.products_with_offers||new Set((r.offers||[]).map(o=>o.product_code)).size}</b><span>Produkte mit Angebot</span></div><div class="status-item"><b>${state.products.length-(r.products_with_offers||0)}</b><span>ohne bestätigten Treffer</span></div></div><p class="muted" style="margin-top:14px">Nicht gefundene Produkte sind nicht automatisch ausverkauft. Captchas, JavaScript-Shops und Bot-Schutz können Prüfungen verhindern.</p>`
 }
-window.openProduct=(code)=>{const p=products.find(x=>x.code===code);if(p)showAndScanProduct(p)};
-window.openCustomProduct=(name)=>showAndScanProduct({code:"",name,category:"Freie Produktsuche",release:"",official:""});
-function closeProduct(){
- document.getElementById("productModal").classList.remove("open");
- document.getElementById("productModal").setAttribute("aria-hidden","true");
+function sparkline(code){
+ const pts=state.history.products?.[code]||[];if(pts.length<2)return empty("Noch kein Preisverlauf","Nach mehreren Scans erscheint hier die Entwicklung des verifizierten Bestpreises.");
+ const vals=pts.map(x=>x.value),min=Math.min(...vals),max=Math.max(...vals),w=500,h=90,pad=8;
+ const coords=vals.map((v,i)=>[pad+i*(w-pad*2)/(vals.length-1),h-pad-(v-min)/(max-min||1)*(h-pad*2)]);
+ return `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none"><polyline fill="none" stroke="currentColor" stroke-width="3" points="${coords.map(x=>x.join(",")).join(" ")}"/></svg>`
 }
-document.getElementById("modalClose").onclick=closeProduct;
-document.getElementById("productModal").onclick=e=>{if(e.target.id==="productModal")closeProduct()};
-document.addEventListener("keydown",e=>{if(e.key==="Escape")closeProduct()});
-document.getElementById("productSearch").oninput=renderProducts;
-document.getElementById("productSearch").addEventListener("keydown",e=>{
- if(e.key==="Enter"){e.preventDefault();const q=e.currentTarget.value.trim();if(q)openCustomProduct(q);}
-});
-document.getElementById("productSearchBtn").onclick=()=>{
- const q=document.getElementById("productSearch").value.trim();
- if(q)openCustomProduct(q); else renderProducts();
-};
-document.getElementById("productCategory").onchange=renderProducts;
-document.getElementById("productPeriod").onchange=renderProducts;
+window.openProduct=code=>{
+ const p=state.products.find(x=>x.code===code);if(!p)return;const offers=productOffers(code),best=bestOffer(code),[cls,label]=productStatus(p);
+ $("modalCategory").textContent=p.category;$("modalTitle").textContent=p.name;$("modalCode").textContent=p.code;
+ $("modalStats").innerHTML=[["Status",label],["Release",p.release||"—"],["Angebote",offers.length],["Bestpreis",best?.price||"—"],["Händler",new Set(offers.map(o=>o.shop)).size],["Preis bestätigt",best?"Ja":"Nein"]].map(x=>`<div class="detail-stat"><span>${x[0]}</span><b>${x[1]}</b></div>`).join("");
+ $("modalOffers").innerHTML=offers.map(offerHtml).join("")||empty("Kein bestätigtes Angebot","Der letzte Scan hat keine eindeutige Produktseite mit aktivem Kaufstatus gefunden.");
+ $("modalChart").innerHTML=sparkline(code);$("modalOfficial").href=p.official||"https://en.onepiece-cardgame.com/products/";
+ $("modalFavorite").textContent=state.favorites.has(code)?"★ Von Watchlist entfernen":"☆ Zur Watchlist hinzufügen";$("modalFavorite").onclick=()=>{toggleFavorite(code);openProduct(code)};
+ $("productModal").classList.add("open")
+}
+window.closeModal=()=>$("productModal").classList.remove("open");
+function renderAll(){
+ renderKpis();renderOverview();renderProducts();renderOffers();renderCalendar();renderWatchlist();renderActivity();renderShops();renderSystem()
+}
+window.goView=name=>{
+ document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));$("view-"+name).classList.add("active");
+ document.querySelectorAll("#nav button").forEach(b=>b.classList.toggle("active",b.dataset.view===name));
+ history.replaceState(null,"","#"+name);$("sidebar").classList.remove("open")
+}
+window.refreshData=async()=>{state.results={offers:[]};await loadData();showToast("Daten neu geladen")};
+window.resetFilters=()=>{["productSearch","maxPrice"].forEach(id=>$(id).value="");["statusFilter","categoryFilter","releaseFilter"].forEach(id=>$(id).value="");document.querySelectorAll(".filter-drawer .chip").forEach(x=>x.classList.remove("active"));renderProducts()};
 
-const auto=document.getElementById("autoRefresh");
-auto.checked=localStorage.getItem("opHunterAuto")==="1";
-auto.onchange=()=>localStorage.setItem("opHunterAuto",auto.checked?"1":"0");
-document.getElementById("shopCount").textContent=shops.length;
-document.getElementById("lastCheck").textContent=localStorage.getItem("opHunterLastCheck")||"Noch nicht";
-populateCountries();populateProductCategories();populateProductSuggestions();renderProducts();renderShops();renderAlerts();
-
-(async()=>{
- try{
-   const data=await loadCloudResults();
-   const el=document.getElementById("cloudStatusText");
-   if(!data.generated_at){
-     el.innerHTML='Noch kein Scan vorhanden. Starte den ersten Workflow unter <b>Actions</b>.';
-     return;
-   }
-   const when=new Date(data.generated_at).toLocaleString("de-DE");
-   el.innerHTML=`Letzte Prüfung: <b>${esc(when)}</b> · ${Number(data.checked_shops||0)} Shops · ${Number((data.offers||[]).length)} verfügbare Angebote`;
-   document.getElementById("lastCheck").textContent=when;
- }catch(e){
-   document.getElementById("cloudStatusText").textContent="Ergebnisdatei noch nicht veröffentlicht.";
- }
-})();
-
+document.querySelectorAll("#nav button").forEach(b=>b.onclick=()=>goView(b.dataset.view));
+$("menuBtn").onclick=()=>$("sidebar").classList.toggle("open");
+$("productModal").onclick=e=>{if(e.target.id==="productModal")closeModal()};
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal()});
+$("tableViewBtn").onclick=()=>{state.viewMode="table";localStorage.setItem("opHunterView","table");renderProducts()};
+$("cardViewBtn").onclick=()=>{state.viewMode="cards";localStorage.setItem("opHunterView","cards");renderProducts()};
+["productSearch","statusFilter","categoryFilter","releaseFilter","maxPrice","sortFilter"].forEach(id=>$(id).addEventListener("input",renderProducts));
+["verifiedOnly","favoritesOnly","availableOnly"].forEach(id=>$(id).onclick=()=>{$ (id).classList.toggle("active");renderProducts()});
+["offerSearch","offerCountry","offerType","offerSort"].forEach(id=>$(id).addEventListener("input",renderOffers));
+$("calendarRange").onchange=renderCalendar;$("eventFilter").onchange=renderActivity;
+["shopSearch","shopCountry"].forEach(id=>$(id).addEventListener("input",renderShops));
+$("globalSearch").addEventListener("input",e=>{$("productSearch").value=e.target.value;goView("products");renderProducts()});
+[...new Set(fallbackProducts.map(p=>p.category))].sort().forEach(c=>$("categoryFilter").insertAdjacentHTML("beforeend",`<option>${esc(c)}</option>`));
+[...new Set(fallbackShops.map(s=>s.country))].sort().forEach(c=>{$("offerCountry").insertAdjacentHTML("beforeend",`<option>${esc(c)}</option>`);$("shopCountry").insertAdjacentHTML("beforeend",`<option>${esc(c)}</option>`)});
+const initial=location.hash.replace("#","");if(initial&&$("view-"+initial))goView(initial);
+loadData();
 </script>
 </body>
 </html>
