@@ -1,4 +1,3 @@
-.github/workflows/op-hunter.yml
 name: OP Hunter Scan & Deploy
 
 on:
