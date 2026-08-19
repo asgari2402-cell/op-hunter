@@ -1,13 +1,13 @@
 {
-  "generated_at": "2026-08-18T05:06:19.941450+00:00",
+  "generated_at": "2026-08-19T05:26:37.533302+00:00",
   "checked_shops": 50,
   "products_checked": 67,
   "checks_attempted": 3350,
-  "duration_seconds": 1486.4,
-  "offers_count": 157,
-  "preorders_count": 5,
-  "verified_prices_count": 5,
-  "products_with_offers": 66,
+  "duration_seconds": 2649.6,
+  "offers_count": 166,
+  "preorders_count": 6,
+  "verified_prices_count": 10,
+  "products_with_offers": 67,
   "shops_with_offers": 13,
   "offers": [
     {
@@ -20,6 +20,19 @@
       "available": true,
       "order_type": "Bestellung",
       "price": "19.99 EUR",
+      "price_verified": true,
+      "evidence": "schema.org Product/Offer"
+    },
+    {
+      "product_code": "3RD-ANNIV",
+      "product_name": "English Version 3rd Anniversary Set",
+      "query": "3RD-ANNIV English Version 3rd Anniversary Set",
+      "shop": "TCG-Corner",
+      "country": "Niederlande",
+      "url": "https://tcg-corner.com/products/one-piece-card-game-japanese-2nd-anniversary-set",
+      "available": true,
+      "order_type": "Bestellung",
+      "price": "595.0 USD",
       "price_verified": true,
       "evidence": "schema.org Product/Offer"
     },
@@ -102,6 +115,19 @@
       "evidence": "aktiver Kaufbutton"
     },
     {
+      "product_code": "EB-02",
+      "product_name": "ANIME 25TH COLLECTION",
+      "query": "EB-02 ANIME 25TH COLLECTION",
+      "shop": "Unicorn Cards",
+      "country": "UK",
+      "url": "https://www.unicorncards.co.uk/product/restocked",
+      "available": true,
+      "order_type": "Vorbestellung",
+      "price": "",
+      "price_verified": false,
+      "evidence": "aktiver Kaufbutton"
+    },
+    {
       "product_code": "EB-03",
       "product_name": "ONE PIECE HEROINES EDITION",
       "query": "EB-03 ONE PIECE HEROINES EDITION",
@@ -147,6 +173,32 @@
       "shop": "Dungeon Marvels",
       "country": "Spanien",
       "url": "https://dungeonmarvels.com/",
+      "available": true,
+      "order_type": "Bestellung",
+      "price": "",
+      "price_verified": false,
+      "evidence": "aktiver Kaufbutton"
+    },
+    {
+      "product_code": "HEROINES-SET",
+      "product_name": "ONE PIECE Heroines Special Set",
+      "query": "HEROINES-SET ONE PIECE Heroines Special Set",
+      "shop": "GoblinTrader",
+      "country": "Spanien",
+      "url": "https://www.goblintrader.es/es/inicio/59467-final-girl-t3-pelicula-especial-shriek-mort-castellano-pre-pedido--8436564815354.html",
+      "available": true,
+      "order_type": "Bestellung",
+      "price": "29.95 EUR",
+      "price_verified": true,
+      "evidence": "schema.org Product/Offer"
+    },
+    {
+      "product_code": "MAT-V6",
+      "product_name": "Official Playmat Limited Edition vol.6",
+      "query": "MAT-V6 Official Playmat Limited Edition vol.6",
+      "shop": "Cardbuddys",
+      "country": "Deutschland",
+      "url": "https://cardbuddys.de/collections/playmats",
       "available": true,
       "order_type": "Bestellung",
       "price": "",
@@ -204,6 +256,19 @@
       "price": "",
       "price_verified": false,
       "evidence": "aktiver Kaufbutton"
+    },
+    {
+      "product_code": "MAT-V6",
+      "product_name": "Official Playmat Limited Edition vol.6",
+      "query": "MAT-V6 Official Playmat Limited Edition vol.6",
+      "shop": "TCG-Corner",
+      "country": "Niederlande",
+      "url": "https://tcg-corner.com/products/grand-archive-mortal-ambition-alter-edition",
+      "available": true,
+      "order_type": "Bestellung",
+      "price": "570.0 USD",
+      "price_verified": true,
+      "evidence": "schema.org Product/Offer"
     },
     {
       "product_code": "OP-01",
@@ -898,6 +963,19 @@
       "product_code": "PCC-BS6",
       "product_name": "Premium Card Collection – Best Selection Vol.6",
       "query": "PCC-BS6 Premium Card Collection – Best Selection Vol.6",
+      "shop": "DracauGames",
+      "country": "Frankreich",
+      "url": "https://www.dracaugames.com/collections/kayou",
+      "available": true,
+      "order_type": "Bestellung",
+      "price": "",
+      "price_verified": false,
+      "evidence": "aktiver Kaufbutton"
+    },
+    {
+      "product_code": "PCC-BS6",
+      "product_name": "Premium Card Collection – Best Selection Vol.6",
+      "query": "PCC-BS6 Premium Card Collection – Best Selection Vol.6",
       "shop": "PlayPeak",
       "country": "Niederlande",
       "url": "https://playpeak.eu/products/pokemon-tcg-pokemon-day-collection-2026",
@@ -914,6 +992,19 @@
       "shop": "Collect-it",
       "country": "Deutschland",
       "url": "https://www.collect-it.de/collectXP-Sammelkarten-Album-Premium-Sammelalbum-Card-Binder-fuer-alle-TCG-Sammelkarten-schwarz",
+      "available": true,
+      "order_type": "Bestellung",
+      "price": "",
+      "price_verified": false,
+      "evidence": "aktiver Kaufbutton"
+    },
+    {
+      "product_code": "PCC-BS7",
+      "product_name": "Premium Card Collection – Best Selection vol.7",
+      "query": "PCC-BS7 Premium Card Collection – Best Selection vol.7",
+      "shop": "DracauGames",
+      "country": "Frankreich",
+      "url": "https://www.dracaugames.com/collections/kayou",
       "available": true,
       "order_type": "Bestellung",
       "price": "",
@@ -986,6 +1077,19 @@
       "evidence": "aktiver Kaufbutton"
     },
     {
+      "product_code": "PCC-LA2-BW",
+      "product_name": "Live Action Edition vol.2 – Baroque Works",
+      "query": "PCC-LA2-BW Live Action Edition vol.2 – Baroque Works",
+      "shop": "TCG-Corner",
+      "country": "Niederlande",
+      "url": "https://tcg-corner.com/products/grand-archive-mortal-ambition-alter-edition",
+      "available": true,
+      "order_type": "Bestellung",
+      "price": "570.0 USD",
+      "price_verified": true,
+      "evidence": "schema.org Product/Offer"
+    },
+    {
       "product_code": "PCC-LA2-SH",
       "product_name": "Live Action Edition vol.2 – Straw Hat Crew",
       "query": "PCC-LA2-SH Live Action Edition vol.2 – Straw Hat Crew",
@@ -1023,6 +1127,19 @@
       "price": "",
       "price_verified": false,
       "evidence": "aktiver Kaufbutton"
+    },
+    {
+      "product_code": "PCC-LA2-SH",
+      "product_name": "Live Action Edition vol.2 – Straw Hat Crew",
+      "query": "PCC-LA2-SH Live Action Edition vol.2 – Straw Hat Crew",
+      "shop": "TCG-Corner",
+      "country": "Niederlande",
+      "url": "https://tcg-corner.com/products/grand-archive-mortal-ambition-alter-edition",
+      "available": true,
+      "order_type": "Bestellung",
+      "price": "570.0 USD",
+      "price_verified": true,
+      "evidence": "schema.org Product/Offer"
     },
     {
       "product_code": "PRB-01",
